@@ -3,36 +3,36 @@
 
 """########################################################
 ########################################################
-#                                                     
-# Layer 2 Autonomic Control Plane (ACP)        
-#                                                     
-# Experimental version                              
-#                                                     
+#
+# Layer 2 Autonomic Control Plane (ACP)
+#
+# Experimental version
+#
 # Module name is 'acp'
-#                                                     
+#
 # This module provides an interface for GRASP to a Layer 2
 # ACP, which is presumed to be intrinsically secure. It
 # is intended to be used by the grasp.py implementation
 # of RFC8990. This module is *not* an implementation of
 # RFC8994.
-#                                                     
-# Because it's demonstration code written in an       
-# interpreted language, performance is slow.          
-#                                                     
-# SECURITY WARNINGS:                                  
-#  - assumes ACP up on all interfaces (or none)       
-#  - assumes BUT DOES NOT CHECK that layer 2 is secured           
+#
+# Because it's demonstration code written in an
+# interpreted language, performance is slow.
+#
+# SECURITY WARNINGS:
+#  - assumes ACP up on all interfaces (or none)
+#  - assumes BUT DOES NOT CHECK that layer 2 is secured
 #  - does not watch for interface up/down changes
 #    (but does handle IPv6 address changes)
-#                                                     
-# LIMITATIONS:                                        
+#
+# LIMITATIONS:
 #  - only coded for IPv6, any IPv4 is accidental
-#  - survival of address changes and CPU sleep/wakeup is patchy          
+#  - survival of address changes and CPU sleep/wakeup is patchy
 #  - workarounds for defects in Python socket module and
 #    Windows socket peculiarities. Not tested on Android.
 #
-# See grasp.py for license, copyright, and disclaimer.                        
-#                                                     
+# See grasp.py for license, copyright, and disclaimer.
+#
 ########################################################
 ########################################################"""
 
@@ -71,7 +71,7 @@ if os.name!="nt":
         print("Could not import netifaces")
         time.sleep(10)
         exit()
-    
+
 
 GRASP_LISTEN_PORT = 7017 # IANA port number
 _loopbacks = []     # Empty list of loopback interfaces
@@ -82,12 +82,12 @@ def new2019():
 
 def status():
     """ACP status(), returns False if insecure """
-    #return False #uncomment this line to tell the truth (ACP is insecure)
-    return "WARNING: Simple Layer 2 ACP with no security." #tests as True
+    # return False #uncomment this line to tell the truth (ACP is insecure)
+    return "WARNING: Simple Layer 2 ACP with no security." # tests as True
 
 def _find_windows_loopbacks():
     """Internal use only"""
-    #this detects bogus interfaces such as TunnelBear
+    # this detects bogus interfaces such as TunnelBear
     global _loopbacks
     result = []
     win_cmd = 'ipconfig'
@@ -105,18 +105,18 @@ def _find_windows_loopbacks():
     ignore = False
     for line in result:
         if line[0] != ' ':
-            #new adaptor
+            # new adaptor
             inloopback = False
             inadaptor = False
             ignore = False
             if 'oopback' in line:
                 inloopback = True
         else:
-            #in the body of an adaptor
+            # in the body of an adaptor
             if 'Media disconnected' in line:
                 ignore = True
             elif 'Link-local IPv6 Address' in line and inloopback and (not ignore):
-                #find the interface index
+                # find the interface index
                 _, ifi = line.split('%')
                 _loopbacks.append(int(ifi))
 
@@ -139,21 +139,21 @@ def _get_my_address(build_zone=False):
     _new_locator = None
     _new_ULA = None
     if os.name=="nt":
-        #This only works on Windows
+        # This only works on Windows
 
-        #This needs recent Python
+        # This needs recent Python
         try:
             _find_windows_loopbacks()
         except Exception:
             pass
-                
+
         _addrinfo = socket.getaddrinfo(socket.gethostname(),0)
         for _af,_temp1,_temp2,_temp3,_addr in _addrinfo:
             if _af == socket.AF_INET6:
-                _addr,_temp,_temp,_zid = _addr  #get first item from tuple
+                _addr,_temp,_temp,_zid = _addr  # get first item from tuple
                 if '%' in _addr:
-                    #this applies on Windows for Python before 3.7
-                    _addr,_zid = _addr.split('%') #strip any Zone ID
+                    # this applies on Windows for Python before 3.7
+                    _addr,_zid = _addr.split('%') # strip any Zone ID
                     _zid = int(_zid)
                 if build_zone:
                     _loc = ipaddress.IPv6Address(_addr)
@@ -168,35 +168,35 @@ def _get_my_address(build_zone=False):
                         _new_ULA = _loc  # save first ULA
         if _new_ULA:
             _new_locator = _new_ULA       # prefer ULA
-            
+
     else:
-        
-##       if build_zone:
-##            #Jinmei's code for Posix operating systems
-##            for _iid, _ in socket.if_nameindex():
-##                with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as _s:
-##                    try:
-##                        _s.connect(('fe80::100', 4096, 0, _iid))
-##                        _addr = _s.getsockname()[0]
-##                        if '%' in _addr:
-##                            _addr, _zid = _addr.split('%') #strip any Zone ID
-##                            _loc = ipaddress.IPv6Address(_addr)
-##                            if _loc.is_link_local:
-##                                _ll_zone_ids.append([_zid, _loc])
-##                    except:
-##                        pass
+
+# #       if build_zone:
+# #            #Jinmei's code for Posix operating systems
+# #            for _iid, _ in socket.if_nameindex():
+# #                with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as _s:
+# #                    try:
+# #                        _s.connect(('fe80::100', 4096, 0, _iid))
+# #                        _addr = _s.getsockname()[0]
+# #                        if '%' in _addr:
+# #                            _addr, _zid = _addr.split('%') #strip any Zone ID
+# #                            _loc = ipaddress.IPv6Address(_addr)
+# #                            if _loc.is_link_local:
+# #                                _ll_zone_ids.append([_zid, _loc])
+# #                    except:
+# #                        pass
 
         ifs = netifaces.interfaces()
         for interface in ifs:
             config = netifaces.ifaddresses(interface)
-            #if interface != 'lo' and netifaces.AF_INET6 in config.keys():
-            #(removed because assigning a ULA to 'lo' is reasonable practice)
+            # if interface != 'lo' and netifaces.AF_INET6 in config.keys():
+            # (removed because assigning a ULA to 'lo' is reasonable practice)
             if netifaces.AF_INET6 in config.keys():
                 for link in config[netifaces.AF_INET6]:
                     if 'addr' in link.keys():
                         _addr = link['addr']
                         if build_zone and '%' in _addr:
-                            _addr, _zid = _addr.split('%') #strip any Zone ID
+                            _addr, _zid = _addr.split('%') # strip any Zone ID
                             _loc = ipaddress.IPv6Address(_addr)
                             if _loc.is_link_local:
                                _ll_zone_ids.append([_zid, _loc])
@@ -210,42 +210,42 @@ def _get_my_address(build_zone=False):
                                 _new_ULA = _loc  # save first ULA
                 if _new_ULA:
                     _new_locator = _new_ULA       # prefer ULA
-                        
+
         if build_zone:
-            #Convert interface (Zone) IDs to indexes
+            # Convert interface (Zone) IDs to indexes
             _ll_zone_ids = [[socket.if_nametoindex(zid), loc] for zid, loc in _ll_zone_ids]
 
 
-        
-##        #Get own IPv6 address somewhat portably...
-##        #Needed if using jinmei's method
-##        _s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-##        try:
-##            #This is a hack. We send a bogon to a site-local multicast
-##            #address (reserved by IANA for 'any private experiment').
-##            #Then we can find the sending address from the socket.
-##            #Note that this used to use a bogus global unicast address
-##            #('2001:db8:f000:baaa:f000:baaa:f000:baaa') but that fails in
-##            #case of a ULA prefix with no default IPv6 route.
-##            #
-##            #To find a non-hack solution, use the netifaces module
-##            
-##            _s.connect(('ff05::114', GRASP_LISTEN_PORT))
-##            _s.send(b'0',0)
-##        except:
-##            pass
-##        _sn = _s.getsockname()[0]
-##        _s.close()
-##        if (not '%' in _sn) and (_sn != '::'):
-##            _new_locator = ipaddress.IPv6Address(_sn)
-##            #it seems that on Linux this does not exclude LL addresses
-##            if _new_locator.is_link_local:
-##                _new_locator = None
 
-    
-                
+# #        #Get own IPv6 address somewhat portably...
+# #        #Needed if using jinmei's method
+# #        _s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+# #        try:
+# #            #This is a hack. We send a bogon to a site-local multicast
+# #            #address (reserved by IANA for 'any private experiment').
+# #            #Then we can find the sending address from the socket.
+# #            #Note that this used to use a bogus global unicast address
+# #            #('2001:db8:f000:baaa:f000:baaa:f000:baaa') but that fails in
+# #            #case of a ULA prefix with no default IPv6 route.
+##            #
+# #            #To find a non-hack solution, use the netifaces module
+##
+# #            _s.connect(('ff05::114', GRASP_LISTEN_PORT))
+# #            _s.send(b'0',0)
+# #        except:
+# #            pass
+# #        _sn = _s.getsockname()[0]
+# #        _s.close()
+# #        if (not '%' in _sn) and (_sn != '::'):
+# #            _new_locator = ipaddress.IPv6Address(_sn)
+# #            #it seems that on Linux this does not exclude LL addresses
+# #            if _new_locator.is_link_local:
+# #                _new_locator = None
+
+
+
     if build_zone:
-        #remove any loopback interfaces detected earlier
+        # remove any loopback interfaces detected earlier
         i = 0
         while i < len(_ll_zone_ids):
             if _ll_zone_ids[i][0] in _loopbacks:
@@ -257,4 +257,4 @@ def _get_my_address(build_zone=False):
 
 
 
-    
+

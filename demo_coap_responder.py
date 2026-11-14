@@ -13,7 +13,7 @@ from cgrasp import cgrasp as cg
 from cgrasp.cgrasp_coap_transport import CgraspCoapApiBridge, install_cgrasp_unicast_over_coap
 from cgrasp.coap_server import make_default_cgrasp_server
 
-#python3 demo_coap_responder.py --asa ResponderASA --objnum 40001 --coap-port 5683 --coap-path .well-known/grasp-coap --mc-path .well-known/grasp-coap --listen-self --dull --once --timeout-ms 5000
+# python3 demo_coap_responder.py --asa ResponderASA --objnum 40001 --coap-port 5683 --coap-path .well-known/grasp-coap --mc-path .well-known/grasp-coap --listen-self --dull --once --timeout-ms 5000
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(

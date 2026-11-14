@@ -2,47 +2,47 @@
 # Copyright (c) 2025-2026 The cGRASP contributors
 """########################################################
 ########################################################
-#                                                     
-#Constrained Generic Autonomic Signaling Protocol (cGRASP)        
-#                                                     
-# cGRASP engine and experimental API                             
-#                                                     
+#
+#Constrained Generic Autonomic Signaling Protocol (cGRASP)
+#
+# cGRASP engine and experimental API
+#
 # Module name is 'cgrasp'
-#                                                     
+#
 # This is a prototype/demo implementation of cGRASP. It was
 # developed using Python 3.4 and above.
-# 
+#
 # It is based on draft-ietf-anima-constrained-grasp and RFC8990. The API is not fully compatible
 # with RFC8991; for that, use the module cgraspi.py, which
 # imports this module.
 #
-# This code is not guaranteed or validated in any way and is 
+# This code is not guaranteed or validated in any way and is
 # both incomplete and probably wrong. It makes no claim
 # to be production-quality code. Its main purpose is to
-# help validate the protocol specification.            
-#                                                     
-# Because it's demonstration code written in an       
-# interpreted language, performance is slow.          
-#                                                     
-# SECURITY WARNINGS:                                  
-#  - assumes ACP up on all interfaces (or none)       
+# help validate the protocol specification.
+#
+# Because it's demonstration code written in an
+# interpreted language, performance is slow.
+#
+# SECURITY WARNINGS:
+#  - assumes ACP up on all interfaces (or none)
 #  - does not watch for interface up/down changes
 #  - no support for wrapping TCP in TLS
 #  - it is strongly recommended to use the built-in QUADS security
 #    unless a truly secure ACP is available
-#                                                     
-# LIMITATIONS:                                        
+#
+# LIMITATIONS:
 #  - only coded for IPv6, no IPv4 support
 #  - survival of address changes and CPU sleep/wakeup is patchy
-#  - FQDN and URI locators incompletely supported          
-#  - no code for handling rapid mode negotiation                         
-#  - relay code is lazy (no rate control)                                        
+#  - FQDN and URI locators incompletely supported
+#  - no code for handling rapid mode negotiation
+#  - relay code is lazy (no rate control)
 #  - workarounds for defects in Python socket module and
 #    Windows socket peculiarities. Not tested on Android.
 #
 # Released under the BSD "Revised" License as follows:
-#                                                     
-# Copyright (C) xxxx.                  
+#
+# Copyright (C) xxxx.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with
@@ -63,22 +63,22 @@
 # derived from this software without specific prior written
 # permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS  
-# AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
+# AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
 # WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A     
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
 # PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
 # THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY
 # DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 # CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 # PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-# USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    
+# USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
 # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING   
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE        
-# POSSIBILITY OF SUCH DAMAGE.                         
-#                                                     
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
 ########################################################
 ########################################################"""
 
@@ -314,7 +314,7 @@ def configure_logging(level=logging.INFO):
     return logger
 
 
-### for bubbles
+# ## for bubbles
 try:
     import tkinter as tk
     from tkinter import font
@@ -336,7 +336,7 @@ try:
 except Exception:
     raise ImportError("acp.py is required and is included in this project")
 
-#imports for QUADS
+# imports for QUADS
 import os
 import json
 _cryptography = False
@@ -348,13 +348,13 @@ try:
 except Exception:
     pass
 
-#check for latest ACP
+# check for latest ACP
 try:
     acp.new2019()
 except Exception:
     raise ImportError("acp.py does not provide the required 2019 API")
 
-#work-around for Python system error
+# work-around for Python system error
 try:
     socket.IPPROTO_IPV6
 except Exception:
@@ -382,8 +382,8 @@ def tname(x):
 class _asa_instance:
     """Internal use only"""
     def __init__(self, handle, name):
-        self.handle = handle  #the ASA's handle
-        self.name = name      #the ASA's name string
+        self.handle = handle  # the ASA's handle
+        self.name = name      # the ASA's name string
 
 # _asa_registry - list of _asa_instance
 # _asa_lock - lock for _asa_registry
@@ -403,13 +403,13 @@ A cGRASP objective:
  .value  A valid Python object
 """
     def __init__(self, num):
-        self.num = num  #Unique number, int
-        self.discoverable = True #Set False if unwanted (unusual!)
-        self.neg = False  #Set True if cobjective supports negotiation
-        self.dry = False  #Set True if cobjective also supports dry-run negotiation
-        self.synch = False  #Set True if cobjective supports synch
-        self.loop_count = GRASP_DEF_LOOPCT #Default starting value
-        self.value = None #Place holder; format undefined
+        self.num = num  # Unique number, int
+        self.discoverable = True # Set False if unwanted (unusual!)
+        self.neg = False  # Set True if cobjective supports negotiation
+        self.dry = False  # Set True if cobjective also supports dry-run negotiation
+        self.synch = False  # Set True if cobjective supports synch
+        self.loop_count = GRASP_DEF_LOOPCT # Default starting value
+        self.value = None # Place holder; format undefined
 
 def _oclone(obj):
     """Internal use only"""
@@ -425,7 +425,7 @@ def _oclone(obj):
     cobj.synch=obj.synch
     cobj.loop_count=obj.loop_count
     cobj.value=obj.value
-    return cobj        
+    return cobj
 
 class _registered_objective:
     """Internal use only"""
@@ -433,8 +433,8 @@ class _registered_objective:
         self.objective = objective
         self.asa_id    = [asa_handle]
         self.overlap_OK = False
-        self.protocol = socket.IPPROTO_TCP #default
-        self.locators = [] #list of explicit locators, if any
+        self.protocol = socket.IPPROTO_TCP # default
+        self.locators = [] # list of explicit locators, if any
         self.port = 0
         self.discoverable = False # not discoverable until first listening
         self.local = False # link-local iff True
@@ -442,7 +442,7 @@ class _registered_objective:
         self.ttl = _discCacheDefTimeOut # discovery cache timeout in milliseconds
         self.listening = 0 # counts active listeners
         self.listen_q = None
-        
+
 
 # _obj_registry - list of _registered_objective
 # _obj_lock - lock for _obj_registry
@@ -455,10 +455,10 @@ class _registered_objective:
 
 class _discovered_objective:
     """Internal use only"""
-    def __init__(self, objective, asa_locators): 
-        self.objective = objective      
-        self.asa_locators  = asa_locators #list of asa_locator
-        self.received = None #objective received in M_RESPONSE
+    def __init__(self, objective, asa_locators):
+        self.objective = objective
+        self.asa_locators  = asa_locators # list of asa_locator
+        self.received = None # objective received in M_RESPONSE
 
 class asa_locator:
     """
@@ -470,7 +470,7 @@ Values:
  .ifi      Interface identifier via which this was discovered
  .expire   int(time.monotonic()) value when this entry expires (0=never)
 Booleans:
- .diverted  
+ .diverted
  .is_ipaddress
  .is_fqdn
  .is_uri
@@ -481,17 +481,17 @@ Booleans:
         self.ifi = ifi   # Remember which interface this came from
         self.diverted = diverted  # True iff it was in a Divert option
 
-        #Defaults
+        # Defaults
         self.protocol = socket.IPPROTO_TCP
         self.port = CGRASP_LISTEN_PORT
         self.expire = 0
-        
-        #One of the following must be set when the object is created
-        #Addresses to be stored in Python ipaddress class
+
+        # One of the following must be set when the object is created
+        # Addresses to be stored in Python ipaddress class
         self.is_ipaddress = False
         self.is_fqdn = False
         self.is_uri = False
-        
+
 # _discovery_cache - list of _discovered_objective
 # _disc_lock - lock for _discovery_cache
 
@@ -504,18 +504,18 @@ Booleans:
 class _session_instance:
     """Internal use only"""
     def __init__(self, id_value, id_active, id_source):
-        self.id_value = id_value   #Integer 
-        self.id_active = id_active #True if active 
-        self.id_source = id_source #Source locator of ID if needed (packed)
-        self.id_dq = None          #Queue if discovering    
-        self.id_sock = None        #Socket if negotiating
-        self.id_relayed = False    #True if has been relayed
+        self.id_value = id_value   # Integer
+        self.id_active = id_active # True if active
+        self.id_source = id_source # Source locator of ID if needed (packed)
+        self.id_dq = None          # Queue if discovering
+        self.id_sock = None        # Socket if negotiating
+        self.id_relayed = False    # True if has been relayed
 
 class _session_handle:
     """Internal use only"""
     def __init__(self, id_value, id_source):
-        self.id_value = id_value   #Integer 
-        self.id_source = id_source #Source locator of ID if non-local (packed)
+        self.id_value = id_value   # Integer
+        self.id_source = id_source # Source locator of ID if non-local (packed)
 
 # _session_id_cache - list of _session_instance
 # _sess_lock - lock for _session_id_cache
@@ -557,8 +557,8 @@ An objective embedded in a flood:
  .loco   its locator option, or None
 """
     def __init__(self, obj, loco):
-        self.obj = obj             #an objective
-        self.loco = loco           #associated locator option
+        self.obj = obj             # an objective
+        self.loco = loco           # associated locator option
 
 class _message:
     """
@@ -573,14 +573,14 @@ A GRASP message:
  .content       arbitrary content
 """
     def __init__(self, mtype):
-        self.mtype = mtype          #message type, integer
-        self.id_value = 0           #session ID, integer
-        self.id_source = _unspec_address.packed #source address
-        self.ttl = 0                #ttl or waiting time, integer
-        self.options = []           #list of options
-        self.obj = None             #embedded objective
-        self.flood_list = None      #list of _flooded_objective
-        self.content = None         #arbitrary content
+        self.mtype = mtype          # message type, integer
+        self.id_value = 0           # session ID, integer
+        self.id_source = _unspec_address.packed # source address
+        self.ttl = 0                # ttl or waiting time, integer
+        self.options = []           # list of options
+        self.obj = None             # embedded objective
+        self.flood_list = None      # list of _flooded_objective
+        self.content = None         # arbitrary content
 
 class _option:
     """
@@ -593,13 +593,13 @@ A GRASP option:
  .reason    if decline option: reason string
 """
     def __init__(self, otype):
-        self.otype = otype          #option type, integer
-        self.embedded = []          #list of embedded options (if any)
-        self.locator = None         #if locator option: packed address
-                                    #or string
-        self.protocol = 0           #if locator option: protocol #
-        self.port = 0               #if locator option: port #
-        self.reason = None          #if decline option: reason string
+        self.otype = otype          # option type, integer
+        self.embedded = []          # list of embedded options (if any)
+        self.locator = None         # if locator option: packed address
+                                    # or string
+        self.protocol = 0           # if locator option: protocol #
+        self.port = 0               # if locator option: port #
+        self.reason = None          # if decline option: reason string
 
 ####################################
 # Other global variables           #
@@ -610,8 +610,8 @@ A GRASP option:
 # inside that function             #
 ####################################
 
-_grasp_initialised = False #true after GRASP core has been initialised
-_skip_dialogue = False     #true if ASA calls grasp.skip_dialogue
+_grasp_initialised = False # true after GRASP core has been initialised
+_skip_dialogue = False     # true if ASA calls grasp.skip_dialogue
 # Optional hook: replace TCP sockets used for unicast negotiation/synchronization.
 # When set, this must be a callable that returns a socket-like object providing
 # at least: settimeout(seconds), sendall(bytes, flags=0), recvfrom(bufsize), close().
@@ -920,7 +920,7 @@ def _flagword(obj):
 
 def _flags(flagword):
     """Internal use only"""
-    #return Boolean flags for an objective
+    # return Boolean flags for an objective
     return bool(flagword&B_NEG), bool(flagword&B_SYNCH), \
            bool(flagword&B_DRY)
 
@@ -962,28 +962,28 @@ _discTimeoutUnit = 100  # milliseconds (discovery timeout per hop)
 # _relay() and _ass_message()      #
 ####################################
 
-_Op_Opt = 0 #option code in an option
-_Op_Con = 1 #first specific item in an option
-_Op_Proto = 2 #protocol number in a locator option
-_Op_Port = 3  #port number in a locator option
+_Op_Opt = 0 # option code in an option
+_Op_Con = 1 # first specific item in an option
+_Op_Proto = 2 # protocol number in a locator option
+_Op_Port = 3  # port number in a locator option
 
-_Pl_Msg = 0 #message type in a message payload
-_Pl_Ses = 1 #session ID in a message payload
-_Pl_Ini = 2 #initiator in a message payload
-_Pl_Con = 2 #first specific item in a normal message payload
-_Pl_TTL  = _Pl_Ini+1  #TTL in response or flood payload
-_Pl_Rloc = _Pl_TTL+1  #locator option in response payload
-_Pl_Robj = _Pl_Rloc+1 #objective in response payload
-_Pl_FCon = _Pl_TTL+1  #list of [locator,objective] in flood payload
-_Pl_Dobj = _Pl_Ini+1  #objective in discovery payload
+_Pl_Msg = 0 # message type in a message payload
+_Pl_Ses = 1 # session ID in a message payload
+_Pl_Ini = 2 # initiator in a message payload
+_Pl_Con = 2 # first specific item in a normal message payload
+_Pl_TTL  = _Pl_Ini+1  # TTL in response or flood payload
+_Pl_Rloc = _Pl_TTL+1  # locator option in response payload
+_Pl_Robj = _Pl_Rloc+1 # objective in response payload
+_Pl_FCon = _Pl_TTL+1  # list of [locator,objective] in flood payload
+_Pl_Dobj = _Pl_Ini+1  # objective in discovery payload
 
-_Fo_Fobj = 0 #objective in tagged objective in flood
-_Fo_Floc = 1 #locator in tagged objective in flood
+_Fo_Fobj = 0 # objective in tagged objective in flood
+_Fo_Floc = 1 # locator in tagged objective in flood
 
-_Ob_Nam = 0 #name in an objective
-_Ob_Flg = 1 #flags in an objective
-_Ob_LCt = 2 #loop count in an objective
-_Ob_Val = 3 #value object in an objective
+_Ob_Nam = 0 # name in an objective
+_Ob_Flg = 1 # flags in an objective
+_Ob_LCt = 2 # loop count in an objective
+_Ob_Val = 3 # value object in an objective
 
 ####################################
 # Error codes and English-language #
@@ -994,45 +994,45 @@ class _error_codes:
     """names for the error codes"""
     def __init__(self):
         self.ok = 0
-        self.declined = 1 #"Declined"
-        self.noReply = 2 #"No reply"
-        self.unspec = 3 #"Unspecified error"
-        self.ASAfull = 4 #"ASA registry full"
-        self.dupASA = 5 #"Duplicate ASA name"
-        self.noASA = 6 #"ASA not registered"
-        self.notYourASA = 7 #"ASA registered but not by you"
-        self.notBoth = 8 #"Objective cannot support both negotiation and synchronization"
-        self.notDry = 9 #"Dry-run allowed only with negotiation"
-        self.notOverlap = 10 #"Overlap not supported by this implementation"
-        self.objFull = 11 #"Objective registry full"
-        self.objReg = 12 #"Objective already registered"
-        self.notYourObj = 13 #"Objective not registered by this ASA"
-        self.notObj = 14 #"Objective not found"
-        self.notNeg = 15 #"Objective not negotiable"
-        self.noSecurity = 16 #"No security"
-        self.noDiscReply = 17 #"No reply to discovery"
-        self.sockErrNegRq = 18 #"Socket error sending negotiation request"
-        self.noSession = 19 #"No session"
-        self.noSocket = 20 #"No socket"
-        self.loopExhausted = 21 #"Loop count exhausted"
-        self.sockErrNegStep = 22 #"Socket error sending negotiation step"
-        self.noPeer = 23 #"Negotiation peer not listening"
-        self.CBORfail = 24 #"CBOR decode failure"
-        self.invalidNeg = 25 #"Invalid Negotiate message"
-        self.invalidEnd = 26 #"Invalid end message"
-        self.noNegReply = 27 #"No reply to negotiation step"
-        self.noValidStep = 28 #"No valid reply to negotiation step"
-        self.sockErrWait = 29 #"Socket error sending wait message"
-        self.sockErrEnd = 30 #"Socket error sending end message"
-        self.IDclash = 31 #"Incoming request Session ID clash"
-        self.notSynch = 32 #"Not a synchronization objective"
-        self.notFloodDisc = 33 #"Not flooded and no reply to discovery"
-        self.sockErrSynRq = 34 #"Socket error sending synch request"
-        self.noListener = 35 #"Synchronization peer not listening"
-        self.noSynchReply = 36 #"No reply to synchronization request"
-        self.noValidSynch = 37 #"No valid reply to synchronization request"
-        self.invalidLoc = 38 #"Invalid locator"
-        self.sockErr = 39  #"Socket error sending gmessage"
+        self.declined = 1 # "Declined"
+        self.noReply = 2 # "No reply"
+        self.unspec = 3 # "Unspecified error"
+        self.ASAfull = 4 # "ASA registry full"
+        self.dupASA = 5 # "Duplicate ASA name"
+        self.noASA = 6 # "ASA not registered"
+        self.notYourASA = 7 # "ASA registered but not by you"
+        self.notBoth = 8 # "Objective cannot support both negotiation and synchronization"
+        self.notDry = 9 # "Dry-run allowed only with negotiation"
+        self.notOverlap = 10 # "Overlap not supported by this implementation"
+        self.objFull = 11 # "Objective registry full"
+        self.objReg = 12 # "Objective already registered"
+        self.notYourObj = 13 # "Objective not registered by this ASA"
+        self.notObj = 14 # "Objective not found"
+        self.notNeg = 15 # "Objective not negotiable"
+        self.noSecurity = 16 # "No security"
+        self.noDiscReply = 17 # "No reply to discovery"
+        self.sockErrNegRq = 18 # "Socket error sending negotiation request"
+        self.noSession = 19 # "No session"
+        self.noSocket = 20 # "No socket"
+        self.loopExhausted = 21 # "Loop count exhausted"
+        self.sockErrNegStep = 22 # "Socket error sending negotiation step"
+        self.noPeer = 23 # "Negotiation peer not listening"
+        self.CBORfail = 24 # "CBOR decode failure"
+        self.invalidNeg = 25 # "Invalid Negotiate message"
+        self.invalidEnd = 26 # "Invalid end message"
+        self.noNegReply = 27 # "No reply to negotiation step"
+        self.noValidStep = 28 # "No valid reply to negotiation step"
+        self.sockErrWait = 29 # "Socket error sending wait message"
+        self.sockErrEnd = 30 # "Socket error sending end message"
+        self.IDclash = 31 # "Incoming request Session ID clash"
+        self.notSynch = 32 # "Not a synchronization objective"
+        self.notFloodDisc = 33 # "Not flooded and no reply to discovery"
+        self.sockErrSynRq = 34 # "Socket error sending synch request"
+        self.noListener = 35 # "Synchronization peer not listening"
+        self.noSynchReply = 36 # "No reply to synchronization request"
+        self.noValidSynch = 37 # "No valid reply to synchronization request"
+        self.invalidLoc = 38 # "Invalid locator"
+        self.sockErr = 39  # "Socket error sending gmessage"
 errors = _error_codes()
 
 etext = ["OK",
@@ -1083,7 +1083,7 @@ etext = ["OK",
 #                                           #
 #############################################
 
-#Global variables for QUADS
+# Global variables for QUADS
 
 _crypto = False
 _key = 0
@@ -1136,9 +1136,9 @@ def _decrypt_msg(crypt):
 ####################################
 
 ####################################
-#                                  
+#
 # Tell GRASP to skip initial dialogue
-#                                  
+#
 ####################################
 
 def skip_dialogue(testing=False, selfing=False, diagnosing=True,
@@ -1147,7 +1147,7 @@ def skip_dialogue(testing=False, selfing=False, diagnosing=True,
 ####################################################################
 # skip_dialogue(testing=False, selfing=False, diagnosing=True,
 #               be_dull=False)
-#                                  
+#
 # A utility function that tells GRASP to skip some or all of its
 # initial dialogue. Each parameter may be True, False or the string "ask".
 # Default is:
@@ -1160,7 +1160,7 @@ def skip_dialogue(testing=False, selfing=False, diagnosing=True,
 #
 # No return value
 #
-# The quadsing parameter is obsolete (defined for compatibility)                                 
+# The quadsing parameter is obsolete (defined for compatibility)
 ####################################################################
 """
     global _skip_dialogue, test_mode, _listen_self, _mess_check, _be_dull
@@ -1170,7 +1170,7 @@ def skip_dialogue(testing=False, selfing=False, diagnosing=True,
     test_mode = testing
     _listen_self = selfing
     _mess_check = diagnosing
-    _be_dull = be_dull       #too early to set the actual DULL flag
+    _be_dull = be_dull       # too early to set the actual DULL flag
 
 
 def set_multicast_coap(enabled=False, uri_path=("cgrasp", "mc")):
@@ -1977,7 +1977,7 @@ def _coap_wrap_mc_response_post(grasp_bytes, token=b"", no_response=0x1F):
         uri_path=_coap_mc_uri_path,
         no_response=no_response,
     )
-    
+
 
 def set_unicast_socket_factory(factory=None):
     """Install (or clear) a unicast socket factory hook.
@@ -2560,7 +2560,7 @@ def register_asa(asa_name):
 #
 # Tells the GRASP engine that a new ASA is starting up.
 # Also triggers GRASP initialisation if needed.
-# 
+#
 # return zero, asa_handle  if successful
 # return errorcode, None if failure
 #
@@ -2571,7 +2571,7 @@ def register_asa(asa_name):
 
     if not _grasp_initialised:
         _initialise_grasp()
-        
+
     _asa_lock.acquire()
     if len(_asa_registry) >= _asaRegistryLimit:
         # no free space, fail
@@ -2582,7 +2582,7 @@ def register_asa(asa_name):
         _asa_lock.release()
         return errors.dupASA, None
     else:
-        #append new one
+        # append new one
         asa_handle = _new_session(None)
         new_asa = _asa_instance(asa_handle, asa_name)
         _asa_registry.append(new_asa)
@@ -2599,7 +2599,7 @@ def deregister_asa(asa_handle, asa_name):
 # Tells the GRASP engine that an ASA is going away.
 # Deregisters its objectives too.
 # We need this to happen automatically when an ASA crashes.
-# 
+#
 # return zero if successful
 # return errorcode if failure
 ####################################################################
@@ -2630,14 +2630,14 @@ def deregister_asa(asa_handle, asa_name):
             if asa_handle in x.asa_id:
                 x.asa_id.remove(asa_handle)
                 if x.asa_id == []:
-                    #last one - delete it, which shortens the list
+                    # last one - delete it, which shortens the list
                     del _obj_registry[j]
             else:
                 j += 1
         _obj_lock.release()
-        
+
         del _asa_registry[i]
-        #mark the handle as inactive
+        # mark the handle as inactive
         _update_session(_session_instance(asa_handle,False,None))
         _asa_lock.release()
         return errors.ok
@@ -2682,7 +2682,7 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
 # return errorcode if failure
 ####################################################################
 """
-    
+
     if _no_handle(asa_handle):
         return errors.noASA
     if rapid:
@@ -2696,15 +2696,15 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
         return errors.notBoth
     if (not obj.neg) and obj.dry:
         return errors.notDry
-##    if overlap:
-##        return errors.notOverlap    
+# #    if overlap:
+# #        return errors.notOverlap
 
-    #Clone the objective to avoid unintended side effects:
-    #the copy in the registry will be distinct from the instance
-    #supplied by the ASA
+    # Clone the objective to avoid unintended side effects:
+    # the copy in the registry will be distinct from the instance
+    # supplied by the ASA
     obj=_oclone(obj)
 
-    #Search the registry to detect any duplicate
+    # Search the registry to detect any duplicate
     _obj_lock.acquire()
     if len(_obj_registry) >= _objRegistryLimit:
         # no free space, fail
@@ -2723,8 +2723,8 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
                 # disallowed overlap, fail
                 _obj_lock.release()
                 return errors.objReg
-            
-    #not previously registered, start a listener thread if needed
+
+    # not previously registered, start a listener thread if needed
     if obj.neg or obj.synch or obj.dry:
         if _advertise_coap_unicast:
             # If unicast is carried over CoAP via an external bridge/shim,
@@ -2735,11 +2735,11 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
             listen_sock=socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             listen_sock.bind(('',0))
-            listen_port = listen_sock.getsockname()[1] 
+            listen_port = listen_sock.getsockname()[1]
             _tcp_listen(listen_sock).start()
     else:
         listen_port = 0
-    #append new one
+    # append new one
     new_obj = _registered_objective(obj, asa_handle)
     new_obj.overlap_OK = overlap
     new_obj.port = listen_port
@@ -2757,7 +2757,7 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
     _obj_registry.append(new_obj)
     _obj_lock.release()
     return errors.ok
-    
+
 
 
 def deregister_obj(asa_handle, obj):
@@ -2782,15 +2782,15 @@ def deregister_obj(asa_handle, obj):
     for i in range(len(_obj_registry)):
         x =_obj_registry[i]
         if x.objective.num == obj.num:
-            #found it
+            # found it
             if asa_handle not in x.asa_id:
                 _obj_lock.release()
                 return errors.notYourObj
-            #deregister the ASA from the objective
+            # deregister the ASA from the objective
             x.asa_id.remove(asa_handle)
             if x.asa_id == []:
-                #last one - delete it, which shortens the list
-                del _obj_registry[i]            
+                # last one - delete it, which shortens the list
+                del _obj_registry[i]
             _obj_lock.release()
             return errors.ok
     _obj_lock.release()
@@ -2812,7 +2812,7 @@ def _recvraw(sock):
         # transports expose one fully reassembled response per recvfrom(), so
         # probing them for a second "chunk" would incorrectly discard the
         # already complete Block2 payload boundary.
-        #need to check for more chunks
+        # need to check for more chunks
         ttprint("First chunk length",len(rawmsg),"; waiting for more")
         _to = sock.gettimeout()
         sock.settimeout(0.2)
@@ -2822,23 +2822,23 @@ def _recvraw(sock):
                 if len(raw2):
                     rawmsg += raw2
                 else:
-                    break #no more bytes
+                    break # no more bytes
             except Exception:
-                break #timeout, assume there's nothing more
+                break # timeout, assume there's nothing more
         sock.settimeout(_to)
 
-##        #need to check briefly for a second chunk
-##        ttprint("Raw chunk length",len(rawmsg),"; waiting for more")
-##        _to = sock.gettimeout()
-##        sock.settimeout(0.2)
-##        try:
-##            raw2, _ = sock.recvfrom(GRASP_DEF_MAX_SIZE)
-##            if len(raw2):
-##                rawmsg += raw2
-##        except:
-##            pass #timeout, assume there's nothing more
-##        sock.settimeout(_to)        
-        
+# #        #need to check briefly for a second chunk
+# #        ttprint("Raw chunk length",len(rawmsg),"; waiting for more")
+# #        _to = sock.gettimeout()
+# #        sock.settimeout(0.2)
+# #        try:
+# #            raw2, _ = sock.recvfrom(GRASP_DEF_MAX_SIZE)
+# #            if len(raw2):
+# #                rawmsg += raw2
+# #        except:
+# #            pass #timeout, assume there's nothing more
+# #        sock.settimeout(_to)
+
     return rawmsg, send_addr
 
 ####################################
@@ -2852,7 +2852,7 @@ def _recvraw(sock):
 def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
              relay_ifi=False, relay_shandle=None):
     """
-############################################################## 
+##############################################################
 # discover(asa_handle, objective, timeout)
 #
 # Call in separate thread if asynchronous operation required.
@@ -2875,10 +2875,10 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
     global _i_sent_it
     if not relay_ifi:
         if not _secure and not DULL:
-            return errors.noSecurity, [] #allowed in DULL mode
+            return errors.noSecurity, [] # allowed in DULL mode
         errorcode = _check_asa_obj(asa_handle, obj, False)
         if errorcode:
-            #raise RuntimeError("grasp.discover:"+etext[errorcode])
+            # raise RuntimeError("grasp.discover:"+etext[errorcode])
             return errorcode, []
 
     # In DULL mode we relax security checks, but we must NOT mutate the
@@ -2887,11 +2887,11 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
     _disc_loop_count = 1 if DULL else obj.loop_count
 
     if minimum_TTL > 0:
-        #user's expiry deadline
+        # user's expiry deadline
         _exdl = int(time.monotonic()) + minimum_TTL/1000
     else:
-        #normal expiry deadline is NOW
-        _exdl = int(time.monotonic())        
+        # normal expiry deadline is NOW
+        _exdl = int(time.monotonic())
 
     _disc_lock.acquire()
     # Can't use a comprehension because we need the actual
@@ -2904,7 +2904,7 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
                 ttprint("Discover flushing",obj.num)
                 break
             else:
-                _discovery_cache.append(x)   #make it Most Recently Used
+                _discovery_cache.append(x)   # make it Most Recently Used
                 if not _test_divert:
                     # delete any expired locators
                     j = 0
@@ -2916,15 +2916,15 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
                             del x.asa_locators[j]
                         else:
                             j += 1
-                       
-                    # is there anything to return?                
+
+                    # is there anything to return?
                     if len(x.asa_locators) > 0:
                         _found = copy.deepcopy(x.asa_locators)
                         _disc_lock.release()
-                        
-                        # 20220429 - ignore cache entries discovered on same interface 
+
+                        # 20220429 - ignore cache entries discovered on same interface
                         # (RFC8990 section 2.5.4.3 2nd paragraph, last sentence)
-                        
+
                         if relay_ifi:
                             j = 0
                             while len(_found) > j:
@@ -2934,9 +2934,9 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
                                     del _found[j]
                                 else:
                                     j += 1
-                        
+
                         if len(_found) > 0:
-                            return errors.ok, _found                            
+                            return errors.ok, _found
     try:
         _disc_lock.release()
     except Exception:
@@ -2954,13 +2954,13 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
         _sloc = _initiator_locator.packed
         disc_sess = _new_session(_initiator_locator)
         shandle=_session_handle(disc_sess,_sloc)
-        #hack to detect own replies when running two instances
+        # hack to detect own replies when running two instances
         _i_sent_it = disc_sess
         _to = _discTimeoutUnit*_disc_loop_count
         if not timeout:
             timeout = _to
         else:
-            timeout = max(timeout, _to)            
+            timeout = max(timeout, _to)
     else:
         # We are relaying, so cache remote session
         # We trust the timeout set by the relay process
@@ -2971,7 +2971,7 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
         news.id_relayed = True
         _insert_session(news)
 
-    
+
     # Prepare the message
     if relay_ifi:
         _sloc = shandle.id_source
@@ -3047,7 +3047,7 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
                 wire_bytes = _coap_wrap_mc_request(msg_bytes)
                 _audit_transport("legacy_udp_messages")
                 dsock.sendto(wire_bytes, 0, (str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT, 0, ifi))
-            except Exception:# Might fail if CPU suspended etc; ignore and continue.
+            except Exception: # Might fail if CPU suspended etc; ignore and continue.
                 tprint("MC socket failure in discover()")
 
     # Until timeout, wait for and handle UDP responses
@@ -3088,24 +3088,24 @@ def discover(asa_handle, obj, timeout, flush=False, minimum_TTL=-1,
             pass
     dsock.close()
 
-    #when we get here the timeout has expired and anything
-    #received is now in the discovery cache
-    
-    #extract results from discovery cache
+    # when we get here the timeout has expired and anything
+    # received is now in the discovery cache
+
+    # extract results from discovery cache
     _disc_lock.acquire()
     for x in _discovery_cache:
         if x.objective.num == obj.num:
             answer = x.asa_locators
             _disc_lock.release()
             _disactivate_session(shandle)
-            #garbage collect
+            # garbage collect
             return errors.ok, answer
     _disc_lock.release()
-        
-    #no reply, return empty list
+
+    # no reply, return empty list
     _disactivate_session(shandle)
     ttprint("Returning empty discovery result")
-    #garbage collect
+    # garbage collect
     return errors.ok, []
 
 
@@ -3119,24 +3119,24 @@ def _drloop(ifi,ttl,options,rec_obj,obj,inDivert):
 # the relevant objective.
 # recurse when Divert found
 ##################################
-    #options is a list of grasp.option
+    # options is a list of grasp.option
     ttprint("Entering drloop")
-    #ttprint("payload", payload)
+    # ttprint("payload", payload)
     for opti in options:
         if opti.otype == O_DIVERT:
             ttprint("drloop got a Divert option", opti.embedded)
-            #recurse on embedded list of options
+            # recurse on embedded list of options
             _drloop(ifi, ttl, opti.embedded, None, obj, True)
-            #ttprint("back from recursion")
+            # ttprint("back from recursion")
         else:
             alocs = _opt_to_asa_loc(opti, ifi, inDivert)
             if len(alocs) == 1:
                 aloc = alocs[0]
             else:
                 tprint("Anomalous locator option in drloop")
-                
-        #if we have something, complete the ASA locator
-        #and add it to discovery cache entry for obj
+
+        # if we have something, complete the ASA locator
+        # and add it to discovery cache entry for obj
         if 'aloc' in locals():
             aloc.protocol = opti.protocol
             aloc.port = opti.port
@@ -3146,27 +3146,27 @@ def _drloop(ifi,ttl,options,rec_obj,obj,inDivert):
             for x in _discovery_cache:
                 if x.objective.num == obj.num:
                     ttprint("Adding locator to discovery cache for",obj.num)
-                    #20220316 - add check for duplicate
+                    # 20220316 - add check for duplicate
                     _duplicate = False
                     for existing in x.asa_locators:
                         if aloc.locator == existing.locator:
-                            #same answer already in cache
+                            # same answer already in cache
                             _duplicate = True
                             ttprint("Found duplicate locator in discovery cache for",obj.num)
                             if aloc.expire > existing.expire:
-                                #fresher reply, prefer it
+                                # fresher reply, prefer it
                                 existing.expire = aloc.expire
                     if not _duplicate:
                         x.asa_locators.append(aloc)
-                    x.received = rec_obj #always prefer latest value
+                    x.received = rec_obj # always prefer latest value
                     _found = True
                     break
             if not _found:
                 ttprint("Adding objective to discovery cache for", obj.num)
-                #add entry to discovery cache
-                #but first, check length and garbage collect
+                # add entry to discovery cache
+                # but first, check length and garbage collect
                 if len(_discovery_cache) >= _discCacheLimit:
-                    del(_discovery_cache[0]) #delete Least Recently Used
+                    del(_discovery_cache[0]) # delete Least Recently Used
                 _new_do = _discovered_objective(obj,[aloc])
                 _new_do.received = rec_obj
                 _discovery_cache.append(_new_do)
@@ -3220,7 +3220,7 @@ def req_negotiate(asa_handle, obj, peer, timeout, noloop=False):
 #
 # The ASA MUST store the session_handle (an opaque Python object)
 # and use it in the subsequent negotiation steps.
-# 
+#
 # 3) return errors.declined, None, string
 #
 # The peer declined further negotiation, the string gives a reason
@@ -3247,17 +3247,17 @@ def req_negotiate(asa_handle, obj, peer, timeout, noloop=False):
         return errors.noSecurity, None, None
 
     if peer == None:
-        #Caller did not supply locator, we can try discovery
+        # Caller did not supply locator, we can try discovery
         _, ll = discover(asa_handle, obj, timeout)
         if len(ll)==0:
             return errors.noDiscReply, None, None
         else:
-            #choose the first locator discovered
+            # choose the first locator discovered
             peer = ll[0]
-    
-    #got a peer
 
-    #build a Request message for the peer
+    # got a peer
+
+    # build a Request message for the peer
 
     if not timeout:
         timeout = GRASP_DEF_TIMEOUT
@@ -3281,7 +3281,7 @@ def req_negotiate(asa_handle, obj, peer, timeout, noloop=False):
             else:
                 _ifi = 0
             ttprint("Sending req_negotiate to",peer.locator, peer.port)
-            sock.settimeout(5) #there should always be a listener
+            sock.settimeout(5) # there should always be a listener
             sock.connect((str(peer.locator), peer.port,0,_ifi))
 
         msg_bytes = _ass_message(M_REQ_NEG, neg_sess, None, obj)
@@ -3305,9 +3305,9 @@ def req_negotiate(asa_handle, obj, peer, timeout, noloop=False):
         sess.id_sock = sock
         _update_session(sess)
         return errors.noReply, shandle, None
-    
+
     # call common code to wait for reply and handle it
-    return _negloop(shandle, obj, timeout, sock, True)          
+    return _negloop(shandle, obj, timeout, sock, True)
 
 
 def negotiate_step(asa_handle, shandle, obj, timeout):
@@ -3331,7 +3331,7 @@ def negotiate_step(asa_handle, shandle, obj, timeout):
 """
     global _make_invalid
     global _make_badmess
-    
+
     # check that objective is registered and is owned by
     # the calling ASA
     errorcode = _check_asa_obj(asa_handle, obj, False)
@@ -3343,51 +3343,51 @@ def negotiate_step(asa_handle, shandle, obj, timeout):
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity, None, None
-    #verify session
+    # verify session
     neg_sess = shandle.id_value
     s = _get_session(shandle)
     if not s:
         return errors.noSession, None, None
-    #retrieve the socket
+    # retrieve the socket
     sock = s.id_sock
     if sock == None:
         return errors.noSocket, None, None
 
-    #loop count check
-    #(loop count will be decremented in _negloop)
+    # loop count check
+    # (loop count will be decremented in _negloop)
     if obj.loop_count <2:
-        #no point continuing??????????
-        #note that other end times out in this case
+        # no point continuing??????????
+        # note that other end times out in this case
         return errors.loopExhausted, None, None
 
-    if _make_invalid:  #this is a special hack for a test case only
+    if _make_invalid:  # this is a special hack for a test case only
         msg_bytes = _ass_message(M_INVALID, neg_sess, None, "Surprise!")
         sock.sendall(msg_bytes,0)
         _make_invalid = False
-    
-                                 
-    #now send a negotiate message
-    if _make_badmess: #this is a special hack for a test case only
+
+
+    # now send a negotiate message
+    if _make_badmess: # this is a special hack for a test case only
         msg_bytes = _ass_message(M_NEGOTIATE, neg_sess, None, ["Rubbish"])
         _make_badmess = False
     else:
         msg_bytes = _ass_message(M_NEGOTIATE, neg_sess, None, obj)
-    try:       
+    try:
         sock.sendall(msg_bytes,0)
     except OSError as ex:
         ttprint("Socket error sending negotiation step", ex)
         sock.close()
         _disactivate_session(shandle)
         return errors.sockErrNegStep, None, None
-    
+
     if not timeout:
         timeout = GRASP_DEF_TIMEOUT
-    
+
     # call common code to wait for reply and handle it
     return _negloop(shandle, obj, timeout, sock, False)
 
-    
- 
+
+
 
 
 def _negloop(shandle, obj, timeout, sock, new_request):
@@ -3398,28 +3398,28 @@ def _negloop(shandle, obj, timeout, sock, new_request):
 #
 # waits for a negotiation response and
 # handles it
-# 
+#
 # inputs are session handle, user's objective,
-# user's timeout, open socket, and a flag 
+# user's timeout, open socket, and a flag
 # set by req_negotiate
 #
 # return: exactly like req_negotiate
-# 
+#
 ############################################
 
     neg_sess = shandle.id_value
     loopAgain = True
     while loopAgain:
-        loopAgain = False  #will loop only if we get a Wait message
+        loopAgain = False  # will loop only if we get a Wait message
         try:
             sock.settimeout(timeout/1000)
             rawmsg, send_addr = _recvraw(sock)
-                    
+
             if len(rawmsg) == 0:
                 sock.close()
                 _disactivate_session(shandle)
                 return errors.noPeer, None, None
-                    
+
             ttprint("negloop: raw reply:", rawmsg,"bytecount",len(rawmsg))
             try:
                 payload = cbor.loads(_decrypt_msg(rawmsg))
@@ -3430,7 +3430,7 @@ def _negloop(shandle, obj, timeout, sock, new_request):
             ttprint("negloop: CBOR->Python:", payload)
             msg = _parse_msg(payload)
             if not msg:
-                #invalid message, cannot process it
+                # invalid message, cannot process it
                 tprint("Negotiate_step: invalid message format")
                 sock.close()
                 _disactivate_session(shandle)
@@ -3443,7 +3443,7 @@ def _negloop(shandle, obj, timeout, sock, new_request):
                     return errors.noSession, None, None
                 sess.id_sock = sock
                 _update_session(sess)
-                
+
             if msg.mtype == M_INVALID:
                 tprint("Got M_INVALID", msg.id_value, msg.content)
             elif msg.mtype == M_NEGOTIATE and msg.id_value == neg_sess:
@@ -3451,21 +3451,21 @@ def _negloop(shandle, obj, timeout, sock, new_request):
                 rec_obj = msg.obj
                 if rec_obj.dry:
                     ttprint("Received Dry")
-                #decrement loop count
+                # decrement loop count
                 rec_obj.loop_count -= 1
                 rec_obj = _detag_obj(rec_obj)
                 if (rec_obj.num == obj.num) and (rec_obj.neg == True):
-                    return errors.ok, shandle, rec_obj #session and socket still open
+                    return errors.ok, shandle, rec_obj # session and socket still open
                 else:
                     sock.close()
                     _disactivate_session(shandle)
                     return errors.invalidNeg, None, None
-                
+
             elif msg.mtype == M_WAIT and msg.id_value == neg_sess:
                 sock.close()
                 _disactivate_session(shandle)
                 return errors.noValidStep, None, None
-                
+
             elif msg.mtype == M_END and msg.id_value == neg_sess:
                 ttprint("Negotiate_step: got END")
                 # we're done
@@ -3478,14 +3478,14 @@ def _negloop(shandle, obj, timeout, sock, new_request):
                 else:
                     return errors.invalidEnd, None, None
             else:
-                #if it isn't a valid message, ignore it
-                ttprint("Negotiate_step: invalid negotiation response")     
+                # if it isn't a valid message, ignore it
+                ttprint("Negotiate_step: invalid negotiation response")
         except OSError as ex:
             sock.close()
             _disactivate_session(shandle)
             ttprint("Socket error receiving negotiation response", ex)
             return errors.noNegReply, None, None
-    #if all else fails...
+    # if all else fails...
     sock.close()
     _disactivate_session(shandle)
     return errors.noValidStep, None, None
@@ -3533,21 +3533,21 @@ def end_negotiate(asa_handle, shandle, result, reason=None):
 """
     # check that the calling ASA is registered
     if _no_handle(asa_handle):
-        return errors.noASA 
+        return errors.noASA
     # check that GRASP is running securely
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity
-    #verify session
+    # verify session
     s = _get_session(shandle)
     if not s:
         return errors.noSession
-    #retrieve the socket
+    # retrieve the socket
     sock = s.id_sock
     if sock == None:
         return errors.noSocket
-    
-    #now send an end message, close the socket etc & return
+
+    # now send an end message, close the socket etc & return
     if result:
         end_opt = _option(O_ACCEPT)
     else:
@@ -3585,21 +3585,21 @@ def send_invalid(asa_handle, shandle, info="No information"):
 """
     # check that the calling ASA is registered
     if _no_handle(asa_handle):
-        return errors.noASA 
+        return errors.noASA
     # check that GRASP is running securely
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity
-    #verify session
+    # verify session
     s = _get_session(shandle)
     if not s:
         return errors.noSession
-    #retrieve the socket
+    # retrieve the socket
     sock = s.id_sock
     if sock == None:
         return errors.noSocket
-    
-    #now send an invalid message, close the socket etc & return
+
+    # now send an invalid message, close the socket etc & return
     msg_bytes = _ass_message(M_INVALID, s.id_value, None, info)
     try:
         sock.sendall(msg_bytes,0)
@@ -3612,7 +3612,7 @@ def send_invalid(asa_handle, shandle, info="No information"):
         return errors.sockErrEnd
     return errors.ok
 
- 
+
 
 def listen_negotiate(asa_handle, obj):
     """
@@ -3640,7 +3640,7 @@ def listen_negotiate(asa_handle, obj):
 # The ASA MUST store the session_handle (an opaque Python object)
 # and use it in the subsequent negotiation calls.
 #
-# return errorcode, None, None in case of error   
+# return errorcode, None, None in case of error
 ##############################################################
 """
 
@@ -3655,7 +3655,7 @@ def listen_negotiate(asa_handle, obj):
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity, None, None
-    
+
     # set up the listening queue
     q = None
     _obj_lock.acquire()
@@ -3665,8 +3665,8 @@ def listen_negotiate(asa_handle, obj):
                 # set status in objective registry and start listener
                 x.discoverable = True # as from now, discovery is possible
                 x.listening += 1
-                x.listen_q = queue.Queue(_listenQlimit)                
-                q = x.listen_q  
+                x.listen_q = queue.Queue(_listenQlimit)
+                q = x.listen_q
                 # note that there is no separate listener thread as for listen_synchronize
                 break
             else:
@@ -3675,7 +3675,7 @@ def listen_negotiate(asa_handle, obj):
                 q = x.listen_q
                 break
     _obj_lock.release()
-    
+
     # now we start to listen right here in the calling thread
 
 
@@ -3689,29 +3689,29 @@ def listen_negotiate(asa_handle, obj):
     rq = q.get()
     ttprint("listen_negotiate: Got negotiate request from queue")
 
-    #no longer listening until called again, so
-    #decrement listening count in objective registry
-    #and garbage-collect the queue
+    # no longer listening until called again, so
+    # decrement listening count in objective registry
+    # and garbage-collect the queue
     _obj_lock.acquire()
     for x in _obj_registry:
         if x.objective.num == obj.num:
             x.listening -= 1
     _obj_lock.release()
     del q
-    
-    #build the session instance and handle
+
+    # build the session instance and handle
     s_id = rq[2].id_value
     s_source = rq[1]
     s_handle = _session_handle(s_id,s_source.packed)
-    #cache remote session along with socket
+    # cache remote session along with socket
     news = _session_instance(s_id,True,s_source.packed)
     news.id_sock=rq[0]
     if _insert_session(news, _check_race = not (test_mode or _multi_asas)):
-        #(we bypass the race condition check iff in test mode or multi ASA mode)
-        #return proffered objective to caller
+        # (we bypass the race condition check iff in test mode or multi ASA mode)
+        # return proffered objective to caller
         prof_obj = rq[2].obj
         if prof_obj.dry:
-            ttprint("Received Dry Request")   
+            ttprint("Received Dry Request")
         return errors.ok, s_handle, _detag_obj(prof_obj)  # Negotiation starting
     else:
         # race condition clash between s_id and an existing session
@@ -3731,20 +3731,20 @@ def stop_negotiate(asa_handle, obj):
 # return errorcode if failure
 ##############################################################
 """
-    
+
     # check that objective is registered and is owned by
     # the calling ASA
-    
+
     errorcode = _check_asa_obj(asa_handle, obj, False)
     if errorcode:
         return errorcode
 
-    #clear its listening status in objective registry
+    # clear its listening status in objective registry
     _obj_lock.acquire()
     for x in _obj_registry:
         if x.objective.num == obj.num:
             x.listening = 0
-    _obj_lock.release() 
+    _obj_lock.release()
     return errors.ok
 
 def gsend(asa_handle, shandle, message):
@@ -3756,7 +3756,7 @@ def gsend(asa_handle, shandle, message):
 #
 # Sends over the socket for an opened negotiation session
 #
-# message is a Python object. 
+# message is a Python object.
 #
 # return zero if successful
 # return errorcode if failure
@@ -3769,18 +3769,18 @@ def gsend(asa_handle, shandle, message):
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity
-    #verify session
+    # verify session
     s = _get_session(shandle)
     if not s:
         return errors.noSession
-    #retrieve the socket
+    # retrieve the socket
     sock = s.id_sock
     if sock == None:
         return errors.noSocket
     else:
-        #Convert message to CBOR, encrypt, and send
+        # Convert message to CBOR, encrypt, and send
         try:
-            #Convert message to CBOR, encrypt, and send
+            # Convert message to CBOR, encrypt, and send
             sock.sendall(_encrypt_msg(cbor.dumps(message)),0)
             return errors.ok
         except OSError as ex:
@@ -3799,7 +3799,7 @@ def grecv(asa_handle, shandle, timeout):
 # Receives over the socket for an opened negotiation session
 #
 # return zero, message if successful
-#     message is a Python object. 
+#     message is a Python object.
 # return errorcode, None if failure
 ##############################################################
 """
@@ -3810,11 +3810,11 @@ def grecv(asa_handle, shandle, timeout):
     # (allowed in DULL mode for testing/experiments)
     if not _secure and not DULL:
         return errors.noSecurity, None
-    #verify session
+    # verify session
     s = _get_session(shandle)
     if not s:
         return errors.noSession, None
-    #retrieve the socket
+    # retrieve the socket
     sock = s.id_sock
     if sock == None:
         return errors.noSocket, None
@@ -3822,12 +3822,12 @@ def grecv(asa_handle, shandle, timeout):
         try:
             sock.settimeout(timeout/1000)
             rawmsg, send_addr = _recvraw(sock)
-                    
+
             if len(rawmsg) == 0:
                 sock.close()
                 _disactivate_session(shandle)
                 return errors.noPeer, None
-                    
+
             ttprint("grecv: raw reply:", rawmsg,"bytecount",len(rawmsg))
             try:
                 payload = cbor.loads(_decrypt_msg(rawmsg))
@@ -3843,7 +3843,7 @@ def grecv(asa_handle, shandle, timeout):
             _disactivate_session(shandle)
             ttprint("Socket error receiving gmessage", ex)
             return errors.noReply, None
-    
+
 
 
 ####################################
@@ -3867,7 +3867,7 @@ def synchronize(asa_handle, obj, loc, timeout):
 #
 # If the locator is None and the objective was already flooded,
 # the first flooded value in the cache is returned.
-# 
+#
 # Otherwise, synchronization with a discovered ASA is performed.
 # In that case, if the locator is None, discovery is performed,
 # unless the objective is in the discovery cache already.
@@ -3895,9 +3895,9 @@ def synchronize(asa_handle, obj, loc, timeout):
     if not obj.synch:
         return errors.notSynch, None
     if not _secure and not DULL:
-        return errors.noSecurity, None #receiving a flood is allowed in DULL
+        return errors.noSecurity, None # receiving a flood is allowed in DULL
 
-    #Has the objective been flooded?
+    # Has the objective been flooded?
 
     if loc == None:
         _flood_lock.acquire()
@@ -3906,37 +3906,37 @@ def synchronize(asa_handle, obj, loc, timeout):
                (x.source.expire == 0 or x.source.expire > int(time.monotonic())):
                 _result = x.objective
                 _flood_lock.release()
-                return errors.ok, _result #return first unexpired flooded value
-                #(Note that expired floods are garbage collected when
-                #new flood multicasts are received, not here.)
+                return errors.ok, _result # return first unexpired flooded value
+                # (Note that expired floods are garbage collected when
+                # new flood multicasts are received, not here.)
         _flood_lock.release()
 
-    #not flooded
+    # not flooded
     if not _secure and not DULL:
         return errors.noSecurity, None
-    
-    #we need to ask the network
-    
+
+    # we need to ask the network
+
     if not timeout:
         timeout = GRASP_DEF_TIMEOUT
 
     if loc == None:
-        #Caller did not supply locator, we can try discovery
+        # Caller did not supply locator, we can try discovery
         _, ll = discover(asa_handle, obj, timeout)
         if len(ll)==0:
             return errors.notFloodDisc, None
         else:
-            #choose the first locator discovered
+            # choose the first locator discovered
             loc = ll[0]
 
-    #Did a value arrive with the discovery response (i.e. rapid mode synch)?
+    # Did a value arrive with the discovery response (i.e. rapid mode synch)?
     _disc_lock.acquire()
     for x in _discovery_cache:
         if x.objective.num == obj.num and x.received:
-            #No need to execute synchronization
+            # No need to execute synchronization
             _result = x.received
             _disc_lock.release()
-            return errors.ok, _result #return rapid mode reply
+            return errors.ok, _result # return rapid mode reply
     _disc_lock.release()
 
     # request synch from the given locator
@@ -3957,7 +3957,7 @@ def synchronize(asa_handle, obj, loc, timeout):
             else:
                 _ifi = 0
             ttprint("Sending request_syn to",loc.locator,loc.port,_ifi)
-            sock.settimeout(5) #there should always be a listener
+            sock.settimeout(5) # there should always be a listener
             sock.connect((str(loc.locator), loc.port,0,_ifi))
 
         msg_bytes = _ass_message(M_REQ_SYN, sync_sess, None, obj)
@@ -3970,7 +3970,7 @@ def synchronize(asa_handle, obj, loc, timeout):
             pass
         _disactivate_session(shandle)
         return errors.sockErrSynRq, None
-    #now listen for reply
+    # now listen for reply
     try:
         sock.settimeout(timeout/1000)
         rawmsg, send_addr = _recvraw(sock)
@@ -3986,7 +3986,7 @@ def synchronize(asa_handle, obj, loc, timeout):
             return errors.CBORfail, None
         msg = _parse_msg(payload)
         if not msg:
-            #invalid message, cannot process it
+            # invalid message, cannot process it
             _disactivate_session(shandle)
             return errors.noValidSynch, None
         ttprint("Synch: CBOR->Python:", payload)
@@ -3995,22 +3995,22 @@ def synchronize(asa_handle, obj, loc, timeout):
             rec_obj.loop_count -= 1
             if rec_obj.num == obj.num:
                 _disactivate_session(shandle)
-                return errors.ok, _detag_obj(rec_obj) #we're done!
+                return errors.ok, _detag_obj(rec_obj) # we're done!
         elif msg.mtype == M_END and msg.id_value == sync_sess and msg.options and \
              msg.options[0].otype == O_DECLINE:
             _disactivate_session(shandle)
             return errors.noListener, None
         else:
-            #if it isn't a valid synch message, ignore it
-            ttprint("Invalid synch response")     
+            # if it isn't a valid synch message, ignore it
+            ttprint("Invalid synch response")
     except OSError as ex:
         sock.close()
         _disactivate_session(shandle)
         tprint("Socket error receiving synch message", ex)
         return errors.noSynchReply, None
-    #all else fails...
+    # all else fails...
     _disactivate_session(shandle)
-    return errors.noValidSynch, None               
+    return errors.noValidSynch, None
 
 
 
@@ -4030,7 +4030,7 @@ def listen_synchronize(asa_handle, obj):
 ##############################################################
 """
 
-    #clone the objective to avoid unintended side effects    
+    # clone the objective to avoid unintended side effects
     obj = _oclone(obj)
     # check that objective is registered and is owned by
     # the calling ASA
@@ -4043,8 +4043,8 @@ def listen_synchronize(asa_handle, obj):
     # check that GRASP is running securely
     if not _secure and not DULL:
         return errors.noSecurity
-    
-    #ttprint("listen_synchronize: Obj value recvd:",obj.num,obj.value)
+
+    # ttprint("listen_synchronize: Obj value recvd:",obj.num,obj.value)
     _obj_lock.acquire()
     for x in _obj_registry:
         if x.objective.num == obj.num:
@@ -4052,7 +4052,7 @@ def listen_synchronize(asa_handle, obj):
             # Note that this objective has not been transmitted
             # so the value does not need detagging.
             x.objective.value = obj.value
-            #ttprint("listen_synchronize: Obj value set",i,obj.num,obj.value,_obj_registry[i].objective.value)
+            # ttprint("listen_synchronize: Obj value set",i,obj.num,obj.value,_obj_registry[i].objective.value)
             if not x.listening:
                 # set status in objective registry and start listener
                 x.discoverable = True # as from now, discovery is possible
@@ -4060,8 +4060,8 @@ def listen_synchronize(asa_handle, obj):
                 x.listen_q =  queue.Queue(_listenQlimit)
                 _synch_listen(obj).start()
                 break
-    _obj_lock.release() 
-    
+    _obj_lock.release()
+
     return errors.ok
 
 
@@ -4117,9 +4117,9 @@ class _synch_listen(threading.Thread):
     def __init__(self, obj):
         threading.Thread.__init__(self, daemon=True)
         self.obj = obj
-        
+
     def run(self):
-        #ttprint("synch_listen Obj in:", self.obj.num,self.obj.value)
+        # ttprint("synch_listen Obj in:", self.obj.num,self.obj.value)
         """Run the synchronization listener until stopped."""
         keep_going = True
         while keep_going:
@@ -4128,12 +4128,12 @@ class _synch_listen(threading.Thread):
             for x in _obj_registry:
                 if x.objective.num == self.obj.num:
                     # we found our objective
-                    #ttprint("synch_listen registry value:", x.objective.value)
+                    # ttprint("synch_listen registry value:", x.objective.value)
                     not_found = False
                     if not x.listening:
                         # can stop listening and exit thread
                         _obj_lock.release()
-                        keep_going = False                        
+                        keep_going = False
                     else:
                         # we're still listening
                         q = x.listen_q
@@ -4148,7 +4148,7 @@ class _synch_listen(threading.Thread):
                         # get the latest value from the registry
                         # (could have changed while we waited for the request)
 
-                        #Note - we use this apparently pointless extra variable
+                        # Note - we use this apparently pointless extra variable
                         # 'ovalue' because when testing inside a single node, there
                         # might be cases where the 'obj' parameter is the exact same
                         # object as the entry in '_obj_registry'
@@ -4156,13 +4156,13 @@ class _synch_listen(threading.Thread):
                         _obj_lock.acquire()
                         for y in _obj_registry:
                             if y.objective.num == self.obj.num:
-                                #ttprint("Objectives", y.objective, self.obj)
+                                # ttprint("Objectives", y.objective, self.obj)
                                 ovalue = y.objective.value
-                                #ttprint("synch_listen Obj value:", ovalue)
+                                # ttprint("synch_listen Obj value:", ovalue)
                         # Note - this is the value stored in the registry so
                         # does not need detagging
                         self.obj.value = ovalue
-                        _obj_lock.release()                        
+                        _obj_lock.release()
                         # send back reply
                         msg_bytes = _ass_message(M_SYNCH, rq[2].id_value, None, self.obj)
                         try:
@@ -4172,7 +4172,7 @@ class _synch_listen(threading.Thread):
                             ttprint("Synch socket failure",ex)
                         rq[0].close()
                         break
-               
+
             # should never need to do this, but race conditions
             # could perhaps arise
             if not_found:
@@ -4195,17 +4195,17 @@ def stop_synchronize(asa_handle, obj):
 """
     # check that objective is registered and is owned by
     # the calling ASA
-    
+
     errorcode = _check_asa_obj(asa_handle, obj, True)
     if errorcode:
         return errorcode
 
-    #clear its listening status in objective registry
+    # clear its listening status in objective registry
     _obj_lock.acquire()
     for x in _obj_registry:
         if x.objective.num == obj.num:
             x.listening = 0
-    _obj_lock.release() 
+    _obj_lock.release()
     return errors.ok
 
 
@@ -4213,7 +4213,7 @@ def stop_synchronize(asa_handle, obj):
 def flood(asa_handle, ttl, *tagged_obj):
     """
 ##############################################################
-# flood(asa_handle, ttl, *tagged_obj)                               
+# flood(asa_handle, ttl, *tagged_obj)
 #
 # Instructs GRASP to flood the given synchronization
 # objective(s) and their value(s) to all GRASP nodes.
@@ -4243,22 +4243,22 @@ def flood(asa_handle, ttl, *tagged_obj):
 """
 
     if not _secure and not DULL:
-        return errors.noSecurity #allowed in DULL mode
+        return errors.noSecurity # allowed in DULL mode
 
     # For compatibility between the experimental API and the
     # RFC API, we have to scan the inputs...
     tagged_objs = []
     for x in tagged_obj:
         if tname(x) == "tagged_objective":
-            #assume experimental API
+            # assume experimental API
             tagged_objs.append(x)
         elif tname(x) == "list":
-            #assume RFC API
+            # assume RFC API
             tagged_objs = x
             break
         else:
             return errors.unspec
-   
+
     for x in tagged_objs:
         errorcode = _check_asa_obj(asa_handle, x.objective, True)
         if errorcode:
@@ -4272,34 +4272,34 @@ def flood(asa_handle, ttl, *tagged_obj):
         tagged_objs[0].objective.loop_count = 1 # force link-local loop count
 
     _floodl = []
-            
+
     for x in tagged_objs:
         if x.source == None:
             _l = [] # empty option
         elif x.source.locator == None:
-            _l = [] # empty option            
+            _l = [] # empty option
         elif x.source.is_ipaddress:
-            #ttprint("Tagged obj source",x.source.locator, tname(x.source.locator))
-            if tname(x.source.locator) == 'IPv6Address':  #fixed 20200408
+            # ttprint("Tagged obj source",x.source.locator, tname(x.source.locator))
+            if tname(x.source.locator) == 'IPv6Address':  # fixed 20200408
                 _l = [O_IPv6_LOCATOR, x.source.locator.packed, x.source.protocol, x.source.port]
             else:
                 _l = [O_IPv4_LOCATOR, x.source.locator.packed, x.source.protocol, x.source.port]
-        elif x.source.is_fqdn:	
+        elif x.source.is_fqdn:
             _l = [O_FQDN_LOCATOR, x.source.locator, x.source.protocol, x.source.port]
         elif x.source.is_uri:
             _l = [O_URI_LOCATOR, x.source.locator, x.source.protocol, x.source.port]
         else:
-            return errors.invalidLoc 
+            return errors.invalidLoc
         _floodl.append([x.objective, _l])
-        #ttprint("Flood list:",_floodl)
-        
+        # ttprint("Flood list:",_floodl)
+
     flood_session = _new_session(_session_locator)
- 
-    #ttprint("Flood TTL:",ttl)
+
+    # ttprint("Flood TTL:",ttl)
 
     if not ttl:
         ttl = 0 # Make it an integer rather than None or False
-    
+
     # Can't use a comprehension because we need the actual
     # list index in order select the correct socket.
     if _use_coap_std_multicast:
@@ -4352,7 +4352,7 @@ def flood(asa_handle, ttl, *tagged_obj):
         try:
             _audit_transport("legacy_udp_messages")
             _mcssocks[i][1].sendto(wire_bytes,0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
-        except Exception:#might fail if CPU suspended etc
+        except Exception: # might fail if CPU suspended etc
             ttprint("MC socket failure in flood()")
             _fixmcsock(i)
     _disactivate_session(_session_handle(flood_session, None))
@@ -4384,12 +4384,12 @@ def get_flood(asa_handle, obj):
     if not obj.synch:
         return errors.notSynch, None
 
-    #Collect list of unexpired flooded tagged_objective
-    #(Note that expired floods are garbage collected when
-    #new flood multicasts are received, not here.)
+    # Collect list of unexpired flooded tagged_objective
+    # (Note that expired floods are garbage collected when
+    # new flood multicasts are received, not here.)
 
-    _l = []  #Initialise empty list
-    
+    _l = []  # Initialise empty list
+
     _flood_lock.acquire()
     for x in _flood_cache:
         if x.objective.num == obj.num and \
@@ -4420,9 +4420,9 @@ def expire_flood(asa_handle, tagged_obj):
 
     if _no_handle(asa_handle):
         return errors.noASA
-    
-    #(Note that expired floods are garbage collected when
-    #new flood multicasts are received, not here.)
+
+    # (Note that expired floods are garbage collected when
+    # new flood multicasts are received, not here.)
     _flood_lock.acquire()
     for x in _flood_cache:
         if (x == tagged_obj) and (x.source.expire > 0):
@@ -4431,7 +4431,7 @@ def expire_flood(asa_handle, tagged_obj):
 
     return errors.ok
 
-########## END OF OFFICIAL API FUNCTIONS ###########
+# ######### END OF OFFICIAL API FUNCTIONS ###########
 
 ####################################
 #                                  #
@@ -4445,7 +4445,7 @@ def _hexit(xx):
         return binascii.b2a_hex(xx)
     elif tname(xx) == "list":
         for i in range(len(xx)):
-            xx[i] = _hexit(xx[i])            
+            xx[i] = _hexit(xx[i])
     return(xx)
 
 def tprint(*whatever,ttp=False):
@@ -4506,7 +4506,7 @@ used exactly like print()"""
 #
 ######################################
 
-    
+
 def init_bubble_text(cap):
     """
     Utility function to enable bubble printing, which uses tkinter.
@@ -4523,11 +4523,11 @@ def init_bubble_text(cap):
         txt: (string) text of the message
         i: after drawing, canvas item for image
         j: after drawing, canvas item for text"""
-        
+
         def __init__(self, x, y, txt):
-            self.x = x     #coordinates
+            self.x = x     # coordinates
             self.y = y
-            self.txt = txt #words
+            self.txt = txt # words
 
     def draw_bubble(can, bubble):
         """
@@ -4535,9 +4535,9 @@ def init_bubble_text(cap):
         bubble : a speakEasy object
         """
 
-        #print("Drawing x",bubble.x,"y",bubble.y,"text",bubble.txt)
+        # print("Drawing x",bubble.x,"y",bubble.y,"text",bubble.txt)
         bubble.i=can.create_image((bubble.x, bubble.y), image=_bubblim)
-        
+
         bubble.j=can.create_text((bubble.x-180,bubble.y-80), font=_myfont,
                              text=bubble.txt, anchor=tk.NW,width=_wrap_at)
 
@@ -4557,44 +4557,44 @@ def init_bubble_text(cap):
         def __init__(self, cap):
             threading.Thread.__init__(self, daemon=True)
             self.cap = cap
-            
+
         def run(self):
 
             """Run the bubble-text UI thread until stopped."""
             global _bubblim, _logoim, _myfont, _bigstring, _bigstring2
-            
+
             try:
-                #make a window
-                #Validate caption first
+                # make a window
+                # Validate caption first
                 _c=self.cap
                 if _c == "":
-                    _c=" GRASP" #default caption if blank
+                    _c=" GRASP" # default caption if blank
                 elif _c[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-                    _c = " "+_c #get round 'feature' in Tk
+                    _c = " "+_c # get round 'feature' in Tk
                 root = tk.Tk(className=_c)
-                
-                #make images and a font
+
+                # make images and a font
                 _bubblim = tk.PhotoImage(data=_bigstring)
                 _logoim = tk.PhotoImage(data=_bigstring2)
                 del _bigstring
                 del _bigstring2
                 _myfont = font.Font(family='Arial',size=12,weight='bold')
-                
-                #set an icon
+
+                # set an icon
                 root.tk.call('wm', 'iconphoto', root._w, _logoim)
 
-                #window on top (doesn't work in all cases)
+                # window on top (doesn't work in all cases)
                 root.lift()
-         
-                #size the window
+
+                # size the window
                 root.geometry(str(HEIGHT)+"x"+str(WIDTH))
 
-                #make a canvas
-                can = tk.Canvas(root)  
-                can.config(background=backgroundCol) #colour it
-                can.pack(fill=tk.BOTH, expand=1) #always full size        
-                
-                #draw blank canvas
+                # make a canvas
+                can = tk.Canvas(root)
+                can.config(background=backgroundCol) # colour it
+                can.pack(fill=tk.BOTH, expand=1) # always full size
+
+                # draw blank canvas
                 root.update_idletasks()
                 root.update()
                 bubbles = [] # empty message list
@@ -4605,71 +4605,71 @@ def init_bubble_text(cap):
                 _looping = False
 
             while _looping:
-                
+
                 # Check print queue unless pausing
                 if _pause <= 0:
                     try:
                         _tx = _bubbleQ.get(block=False)
-                    
-                        #Build a bubble
+
+                        # Build a bubble
                         _m=speakEasy(random.randrange(250,270),int(HEIGHT-70),_tx)
 
-                        #Raise existing bubbles
+                        # Raise existing bubbles
                         for i in range(len(bubbles)):
                             if i==len(bubbles)-1:
-                                #Extra raise for the most recent
+                                # Extra raise for the most recent
                                 raise_bubble(can,bubbles[i])
                             raise_bubble(can,bubbles[i])
 
-                        #Draw the new one
+                        # Draw the new one
                         draw_bubble(can,_m)
-                        #Add new one to the display list
+                        # Add new one to the display list
                         bubbles.append(_m)
 
-                        #Delete the oldest one if off screen
+                        # Delete the oldest one if off screen
                         if bubbles[0].y<-2*step:
                             can.delete(bubbles[0].i)
                             can.delete(bubbles[0].j)
                             del bubbles[0]
-                        #tprint(len(bubbles),"bubbles now")
+                        # tprint(len(bubbles),"bubbles now")
 
-                        #Ask for a display pause
+                        # Ask for a display pause
                         _pause = int(FRAMERATE/2)
                     except Exception:
                         pass
 
-                #Decrement pause
+                # Decrement pause
                 if _pause > 0:
                     _pause -= 1
-                
-                #Update our display                
+
+                # Update our display
                 if bubbles != []:
                     try:
                         root.update_idletasks()
                         root.update()
                     except Exception:
-                        _looping=False #Somebody closed the window
+                        _looping=False # Somebody closed the window
 
                 # Wait before next loop
                 time.sleep(1/FRAMERATE)
 
-            #Exiting
+            # Exiting
             tprint("Bubbles over")
-            ##_dobubbles = False ##That was a bug, must never restart bubbles!
-                
+            # #_dobubbles = False ##That was a bug, must never restart bubbles!
+
     #--------------
     # constants and global vars
     global _dobubbles, _bubblim, _myfont, _wrap_at
 
     if _dobubbles:
-        return  #can only start tkinter once
-            
+        return  # can only start tkinter once
+
     WIDTH = 500
     HEIGHT = 500
-    _wrap_at = 350 #width for text wrap
-    step = 50 #how much to raise a bubble each time
+    _wrap_at = 350 # width for text wrap
+    step = 50 # how much to raise a bubble each time
     FRAMERATE = 10
-    #make a random colour for the background
+    # make a random colour for the background
     r=random.randrange(1,255)
     g=random.randrange(1,255)
     b=random.randrange(1,255)
@@ -4678,9 +4678,9 @@ def init_bubble_text(cap):
     _logoim = None
     _myfont = None
     _dobubbles = True
-    #start a thread to do the work
+    # start a thread to do the work
     bubbler(cap).start()
-    
+
     return
 
 
@@ -4752,13 +4752,13 @@ _prng = random.SystemRandom() # best PRNG we can get
 def _new_session(locator):
     """Internal use only"""
 ####################################
-# Create and insert a new Session  
-# in state active, local           
-# _new_session(locator) returns integer    
+# Create and insert a new Session
+# in state active, local
+# _new_session(locator) returns integer
 ####################################
     with _sess_lock:
         for i in range(10):
-            #x = _prng.randint(0, 0xffffff) #old 24 bit version
+            # x = _prng.randint(0, 0xffffff) #old 24 bit version
             x = _prng.randint(0, 0xffffffff)
             # does _session_id_cache contain an id_value = x?
             if not([clash for clash in _session_id_cache if clash.id_value == x]):
@@ -4786,23 +4786,23 @@ def _insert_session(session_inst, _check_race = False):
 # race condition                   #
 ####################################
     new_id = session_inst.id_value
-    #check for a clash
+    # check for a clash
     _sess_lock.acquire()
-    
+
     if ([clash for clash in _session_id_cache if clash.id_value == new_id]):
         # duplicate, need to check source address
         _sess_lock.release()
         if _check_race:
             return False # incredibly unlikely race condition, do nothing
         clash = _get_session(_session_handle(new_id,session_inst.id_source))
-        #the following test is because in theory the session could have
-        #just been deleted by another thread...
+        # the following test is because in theory the session could have
+        # just been deleted by another thread...
         if clash:
             if clash.id_source == session_inst.id_source:
-                #now we have a confirmed clash, cannot continue
+                # now we have a confirmed clash, cannot continue
                 return False
-        #duplicate has a different source address (or it vanished)
-        #so we can continue
+        # duplicate has a different source address (or it vanished)
+        # so we can continue
         _sess_lock.acquire()
     session_ct = len(_session_id_cache)
     if session_ct >= _sessionCacheLimit:
@@ -4819,7 +4819,7 @@ def _insert_session(session_inst, _check_race = False):
         _sess_lock.release()
         return False
     else:
-        #append new one
+        # append new one
         _session_id_cache.append(session_inst)
         _sess_lock.release()
         return True
@@ -4830,12 +4830,12 @@ def _get_session(shandle):
     """Internal use only"""
 ####################################
 # Get a Session ID entry by ID and #
-# source locator                   # 
+# source locator                   #
 #                                  #
 # _get_session(_session_handle)     #
 # return False if not found active #
 # else return _session_instance    #
-####################################   
+####################################
     _sess_lock.acquire()
     for s in _session_id_cache:
         if shandle.id_value == s.id_value and shandle.id_source == s.id_source and s.id_active:
@@ -4862,7 +4862,7 @@ def _update_session(session_inst):
             _session_id_cache[i] = session_inst
             _sess_lock.release()
             return True
-    #no such ID/source, fail
+    # no such ID/source, fail
     _sess_lock.release()
     return False
 
@@ -4893,12 +4893,12 @@ def _ass_obj(x):
     obj_flags = _flagword(x)
     _val = x.value
     if tname(_val) == "bytes":
-        #see if user supplied value as CBOR bytes
+        # see if user supplied value as CBOR bytes
         try:
             _ = cbor.loads(_val)
-            #seems to be valid CBOR, build Tag 24
+            # seems to be valid CBOR, build Tag 24
             _val = CBORTag(24, _val)
-        except Exception:#not valid CBOR, we'll send the raw bytes
+        except Exception: # not valid CBOR, we'll send the raw bytes
             pass
     return [x.num, obj_flags, x.loop_count, _val]
 
@@ -4919,13 +4919,13 @@ def _ass_opt(x):
         elif x.otype in (O_IPv4_LOCATOR,O_IPv6_LOCATOR,O_FQDN_LOCATOR,O_URI_LOCATOR):
             _opt.append(x.locator)
             _opt.append(x.protocol)
-            _opt.append(x.port)                   
+            _opt.append(x.port)
         return _opt
     elif tname(x) == "list":
-        #assume it's already assembled (legacy code, should be redundant)
+        # assume it's already assembled (legacy code, should be redundant)
         return x
     else:
-        #not valid
+        # not valid
         return [M_INVALID]
 
 
@@ -4942,8 +4942,8 @@ def _ass_message(msg_type, session_id, initiator, *whatever):
 
     # Insert initiator in Discovery, Response and Flood
     if msg_type in (M_DISCOVERY, M_RESPONSE, M_FLOOD):
-        msg.append(initiator) #must be already packed
-        
+        msg.append(initiator) # must be already packed
+
     # Insert remaining contents
     for x in whatever:
         if tname(x) in ("objective", "cobjective"):
@@ -4951,27 +4951,27 @@ def _ass_message(msg_type, session_id, initiator, *whatever):
             # (cGRASP uses numeric objectives; legacy GRASP uses name strings)
             msg.append(_ass_obj(x))
         elif tname(x) == "_option":
-            #some option (e.g. for M_DIVERT)  20220316
+            # some option (e.g. for M_DIVERT)  20220316
             msg.append(_ass_opt(x))
         elif tname(x) == "list":
             if msg_type == M_FLOOD:
                 for y in x:
                     msg.append([_ass_obj(y[_Fo_Fobj]),y[_Fo_Floc]]) # objective & locator option
             else:
-                #lazy code: assume we have a list of options
-                #and insert them
+                # lazy code: assume we have a list of options
+                # and insert them
                 for o in x:
-                    msg.append(_ass_opt(o))                  
+                    msg.append(_ass_opt(o))
         elif msg_type in (M_WAIT, M_FLOOD, M_RESPONSE):
             msg.append(x) # insert timeout (first time round the for-loop)
         elif msg_type == M_INVALID:
             msg.append(x) # insert arbitrary content
-            
-        #more cases to be added if new GRASP messages or options are defined 
-                
-    ttprint("Assembled Python message", msg) 
 
-    #Convert to CBOR bytes
+        # more cases to be added if new GRASP messages or options are defined
+
+    ttprint("Assembled Python message", msg)
+
+    # Convert to CBOR bytes
     msg_bytes = cbor.dumps(msg)
     ttprint("Assembled CBOR message:",msg_bytes)
     return _encrypt_msg(msg_bytes)
@@ -4989,10 +4989,10 @@ def _detag_obj(x):
 
     try:
         if x.value.tag != 24:
-            #wrong tag, return it as is
+            # wrong tag, return it as is
             return x
         x.value = x.value.value
-    except Exception:#no tag, return it as is
+    except Exception: # no tag, return it as is
         pass
     return x
 
@@ -5026,16 +5026,16 @@ def _parse_obj(obj):
 #########################################
     if tname(obj) != 'list':
         _parse_diag("Objective is not a list")
-        return None #not a list
+        return None # not a list
     if len(obj) not in (_Ob_Val,_Ob_Val+1):
         _parse_diag("Objective has wrong length")
-        return None #invalid length
+        return None # invalid length
     if tname(obj[_Ob_Nam]) not in ('int','str') or \
        tname(obj[_Ob_Flg]) != 'int' or \
        tname(obj[_Ob_LCt]) != 'int':
         _parse_diag("Objective has wrong types")
-        return None #wrong type
-    #no rules about the value field, so nothing to check
+        return None # wrong type
+    # no rules about the value field, so nothing to check
     try:
         # cGRASP: numeric objective number
         if tname(obj[_Ob_Nam]) == 'int':
@@ -5090,30 +5090,30 @@ def _parse_opt(opt, _depth=0):
         return None
     if tname(opt) != 'list':
         _parse_diag("Option is not a list")
-        return None #not a list
+        return None # not a list
     elif not len(opt):
         _parse_diag("Option is empty")
-        return None #zero length
+        return None # zero length
     o = _option(opt[_Op_Opt])
     if opt[_Op_Opt] == O_DIVERT:
         if len(opt) < _Op_Con+1 or \
           tname(opt[_Op_Con]) != 'list':
             _parse_diag("Invalid O_DIVERT")
-            return None 
+            return None
         else:
-            #ttprint("O_DIVERT length",len(opt))
-            #scan through embedded locators inside divert option
+            # ttprint("O_DIVERT length",len(opt))
+            # scan through embedded locators inside divert option
             for _raw_opt in opt[_Op_Con:]:
-                #ttprint("Raw option",_raw_opt)
+                # ttprint("Raw option",_raw_opt)
                 eo = _parse_opt(_raw_opt, _depth + 1)
-                #ttprint("Parsed option",eo)
+                # ttprint("Parsed option",eo)
                 if eo:
                     o.embedded.append(eo)
-                    #ttprint("Added",eo,"in parser")
+                    # ttprint("Added",eo,"in parser")
                 else:
                     _parse_diag("Invalid option inside O_DIVERT")
                     return None
-            #20220316 The next line was one tab too far in!
+            # 20220316 The next line was one tab too far in!
             return o
     elif opt[_Op_Opt] == O_ACCEPT:
         return o
@@ -5158,10 +5158,10 @@ def _parse_opt(opt, _depth=0):
             return None
     else:
         if tname(opt[_Op_Opt]) != 'str':
-            #not an objective option
+            # not an objective option
             _parse_diag("Unknown option type", opt[_Op_Opt])
         return None # unknown option
-        
+
 
 def _parse_msg(payload):
     """Internal use only
@@ -5173,10 +5173,10 @@ def _parse_msg(payload):
 #########################################
     if tname(payload) != 'list':
         _parse_diag("Message is not a list")
-        return None #not a list
+        return None # not a list
     elif not len(payload):
         _parse_diag("Message is empty")
-        return None #zero length
+        return None # zero length
     m = _message(payload[_Pl_Msg])
     if payload[_Pl_Msg] == M_NOOP:
         return m
@@ -5202,7 +5202,7 @@ def _parse_msg(payload):
            tname(payload[_Pl_Ini]) != 'bytes' or \
            tname(payload[_Pl_TTL]) != 'int':
             _parse_diag("Invalid M_RESPONSE format")
-            return None 
+            return None
         else:
             for pl in payload[_Pl_Rloc:]:
                 o = _parse_opt(pl)
@@ -5212,7 +5212,7 @@ def _parse_msg(payload):
                     m.ttl = payload[_Pl_TTL]
                     m.options.append(o)
                 else:
-                    #look for optional objective
+                    # look for optional objective
                     m.obj = _parse_obj(pl)
             if not m.options:
                 _parse_diag("No valid option in M_RESPONSE")
@@ -5225,13 +5225,13 @@ def _parse_msg(payload):
            tname(payload[_Pl_Ini]) != 'bytes' or \
            tname(payload[_Pl_TTL]) != 'int':
             _parse_diag("Invalid M_FLOOD format")
-            return None 
+            return None
         else:
             m.id_value = payload[_Pl_Ses]
             m.id_source = payload[_Pl_Ini]
             m.ttl = payload[_Pl_TTL]
             m.flood_list = []
-            #fetch embedded tagged objectives
+            # fetch embedded tagged objectives
             pp = _Pl_FCon
             while pp < len(payload):
                 if len(payload[pp]) != _Fo_Floc+1:
@@ -5250,7 +5250,7 @@ def _parse_msg(payload):
                     op = None
                 m.flood_list.append(_flooded_objective(ob,op))
                 pp += 1
-            return m        
+            return m
     elif payload[_Pl_Msg] in (M_REQ_NEG, M_NEGOTIATE, M_SYNCH, M_REQ_SYN):
         if len(payload) != _Pl_Con+1 or \
            tname(payload[_Pl_Ses]) != 'int':
@@ -5263,7 +5263,7 @@ def _parse_msg(payload):
                 m.obj = o
                 return m
             else:
-                #_parse_obj emitted the diagnostic
+                # _parse_obj emitted the diagnostic
                 return None
     elif payload[_Pl_Msg] == M_END:
         if len(payload) != _Pl_Con+1 or \
@@ -5277,7 +5277,7 @@ def _parse_msg(payload):
                 m.options.append(o)
                 return m
             else:
-                #_parse_option emitted the diagnostic
+                # _parse_option emitted the diagnostic
                 return None
     elif payload[_Pl_Msg] == M_WAIT:
         if len(payload) != _Pl_Con+1 or \
@@ -5298,9 +5298,9 @@ def _parse_msg(payload):
             m.id_value = payload[_Pl_Ses]
             if len(payload) > _Pl_Con:
                 m.content = payload[_Pl_Con:]
-            return m            
+            return m
     else:
-        #unknown message type
+        # unknown message type
         _parse_diag("Unknown message type", payload[_Pl_Msg])
         return None
 
@@ -5310,19 +5310,19 @@ def _opt_to_asa_loc(opt, ifi, inDivert):
 # Service function for _mchandler, _drloop etc.
 # opt is a grasp.option
 # ->  list of asa_locator (empty if no valid locator)
-####################################################  
-    
+####################################################
+
     if opt.otype == O_DIVERT:
         alocs = []
         for o in opt.embedded:
             if o.otype == O_IPv6_LOCATOR:
-                #recursive call for embedded locator
-                alocs += _opt_to_asa_loc(o, ifi, True)            
-            
-#20220316: was complete rubbish: alocs.append(opt, ifi, True)
+                # recursive call for embedded locator
+                alocs += _opt_to_asa_loc(o, ifi, True)
+
+# 20220316: was complete rubbish: alocs.append(opt, ifi, True)
 #          but no run time error, so never executed due to defect
 #          in _mchandler
-            
+
         return alocs
     else:
         aloc = asa_locator(None, ifi, inDivert)
@@ -5341,20 +5341,20 @@ def _opt_to_asa_loc(opt, ifi, inDivert):
             aloc.locator = opt.locator
             aloc.is_uri = True
         else:
-            #no valid locator
+            # no valid locator
             return []
-    return [aloc]    
+    return [aloc]
 
 def _try_mcsock(ifi):
     """Internal use only"""
 ####################################################
 # Service function for _make_mcssock etc.           #
-####################################################    
-    mcssock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) 
+####################################################
+    mcssock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
     mcssock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     mcssock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_IF, struct.pack('@I', ifi))
     if not _listen_self:
-        #don't listen to yourself talking
+        # don't listen to yourself talking
         mcssock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_LOOP, 0)
     mcssock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, 1)
     return mcssock
@@ -5385,7 +5385,7 @@ def _fixmcsock(i):
             _mcssocks[i][1] = _try_mcsock(ifi)
             break
         except OSError:
-            tprint("Waiting for interface") 
+            tprint("Waiting for interface")
             time.sleep(5) # wait for interface to come back up
 
     # Discovery responses are received over UDP in cGRASP, so there is no
@@ -5402,23 +5402,23 @@ class _mclisten(threading.Thread):
 ####################################################
     def __init__(self):
         threading.Thread.__init__(self, daemon=True)
-        
+
     def run(self):
         """Run the link-local multicast listener until stopped."""
         global _mc_restart
         mcrsock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         mcrsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         mcrsock.bind(('',CGRASP_LISTEN_PORT))
-        #join LL multicast group on all interfaces
+        # join LL multicast group on all interfaces
         for x in _ll_zone_ids:
             mreq = ALL_GRASP_NEIGHBORS_6.packed + struct.pack('@I', x[0])
             while True:
                 try:
                     mcrsock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_JOIN_GROUP, mreq)
                     break
-                except Exception:#failed, probably too soon during restart so wait & retry
+                except Exception: # failed, probably too soon during restart so wait & retry
                     time.sleep(2)
-                    
+
         mcrsock.settimeout(120)
 
         tprint("LL multicast listener is up")
@@ -5437,9 +5437,9 @@ class _mclisten(threading.Thread):
                         sport,"interface",ifn,"bytecount",len(rawmsg))
                 if _listen_self or (not [ifn, saddr] in _ll_zone_ids):
 
-                    #Because we listen to ourselves in testing
-                    #and because we can't trust IPV6_MULTICAST_LOOP = 0
-                       
+                    # Because we listen to ourselves in testing
+                    # and because we can't trust IPV6_MULTICAST_LOOP = 0
+
                     coap_token = None
                     if _use_coap_multicast:
                         try:
@@ -5453,39 +5453,39 @@ class _mclisten(threading.Thread):
                     try:
                         payload = cbor.loads(_decrypt_msg(rawmsg))
                     except Exception:
-                        ttprint("Multicast: CBOR decode error") #test mode to suppress QUADS warnings
+                        ttprint("Multicast: CBOR decode error") # test mode to suppress QUADS warnings
                         continue
                     msg = _parse_msg(payload)
                     if not msg:
-                        #invalid message, cannot process it
+                        # invalid message, cannot process it
                         ttprint(payload,saddr,sport,ifn)
                         ttprint("Multicast: Invalid message format")
                         continue
                     ttprint("Multicast: CBOR->Python:", payload)
                     if msg.mtype in (M_DISCOVERY, M_FLOOD):
                         if _relay_needed:
-                            #ttprint("Send",msg.mtype,"from", ifn, "for relay")
-                            #Note that Flood relay needs the payload
-                            _relay(payload, msg, ifn)                         
+                            # ttprint("Send",msg.mtype,"from", ifn, "for relay")
+                            # Note that Flood relay needs the payload
+                            _relay(payload, msg, ifn)
                         try:
                             ttprint("Initiator:", str(ipaddress.IPv6Address(msg.id_source)))
-                            #queue for the mc handler (include CoAP token if present)
+                            # queue for the mc handler (include CoAP token if present)
                             _mcq.put([saddr, sport, ifn, msg, coap_token],block=False)
                         except Exception:
                             tprint("Multicast queue full: packet dropped")
                             pass
-                    #note that unrecognized messages are simply ignored
+                    # note that unrecognized messages are simply ignored
             except OSError:
                 tprint("No LL multicasts on interface for 2 minutes")
                 if _mc_restart:
                     # Need to exit and restart if we can
                     _mc_restart = False
                     _mclisten().start()
-                    break #restarted, so this one can exit
+                    break # restarted, so this one can exit
                 else:
-                    _mc_restart = True  #restart anyway next time
-                                        #in case we missed a CPU wakeup
-                
+                    _mc_restart = True  # restart anyway next time
+                                        # in case we missed a CPU wakeup
+
 
 def _relay(payload, msg, ifi, *, relay_seen=False):
     """Internal use only"""
@@ -5532,7 +5532,7 @@ def _relay(payload, msg, ifi, *, relay_seen=False):
                 upstream_token=b"", upstream_request_context=None)
             if tx is None:
                 return
-    
+
     # drop message if this is a looping relay
     sess = _get_session(r_shandle)
     if sess and _coap_relay_state is None:
@@ -5540,18 +5540,18 @@ def _relay(payload, msg, ifi, *, relay_seen=False):
             ttprint("Dropping a looping relayed multicast", msg.mtype)
             return
         else:
-            #mark the session as relayed
+            # mark the session as relayed
             sess.id_relayed = True
-            _update_session(sess)            
-           
+            _update_session(sess)
+
     if msg.mtype == M_FLOOD:
-        uobj = payload[_Pl_FCon][_Fo_Fobj] #first objective in unparsed flood
-        uobj[_Ob_LCt] -= 1                 #decrement its loop count
+        uobj = payload[_Pl_FCon][_Fo_Fobj] # first objective in unparsed flood
+        uobj[_Ob_LCt] -= 1                 # decrement its loop count
         if uobj[_Ob_LCt] < 1:
-            return #do nothing
-        #ttprint("relaying", uobj[_Ob_Nam],"flood with loop ct", uobj[_Ob_LCt])
+            return # do nothing
+        # ttprint("relaying", uobj[_Ob_Nam],"flood with loop ct", uobj[_Ob_LCt])
         if not sess:
-            #insert session id for the relayed copies
+            # insert session id for the relayed copies
             news = _session_instance(r_shandle.id_value,True,r_shandle.id_source)
             news.id_relayed = True
             _insert_session(news)
@@ -5592,17 +5592,17 @@ def _relay(payload, msg, ifi, *, relay_seen=False):
                         _mcssocks[i][1].sendto(wire_bytes,0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
         else:
             wire_bytes = _coap_wrap_mc_request(msg_bytes)
-            for i in range(len(_ll_zone_ids)):                
+            for i in range(len(_ll_zone_ids)):
                 ttprint("Flood relay for", uobj[_Ob_Nam])
                 if _ll_zone_ids[i][0] != ifi: # will skip the relay source interface
                     _mcssocks[i][1].sendto(wire_bytes,0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
-        _disactivate_flood(r_shandle).start() #will disactivate session ID later
+        _disactivate_flood(r_shandle).start() # will disactivate session ID later
     elif msg.mtype == M_DISCOVERY:
-        msg.obj.loop_count -=1 #decrement loop count
+        msg.obj.loop_count -=1 # decrement loop count
         if msg.obj.loop_count < 1:
-            return #do nothing
+            return # do nothing
         # reuse discover function in relay mode, but kick it off
-        # as a separate thread with fresh copy of objective         
+        # as a separate thread with fresh copy of objective
         _disc_relay(r_shandle, _oclone(msg.obj), ifi).start()
 
 
@@ -5627,19 +5627,19 @@ class _disc_relay(threading.Thread):
     def run(self):
         """Relay a discovery message across interfaces until it completes."""
         ttprint("Discovery relay for", self.obj.num, self.obj.loop_count)
-        #set timeout to 1s per loop count 20170528
+        # set timeout to 1s per loop count 20170528
         discover(None, self.obj, _discTimeoutUnit*self.obj.loop_count, relay_ifi=self.ifi, relay_shandle=self.shandle)
 
 def _init_drsocks(i):
     """Internal use only"""
 ####################################
 # Initialise TCP sockets to receive#
-# unicast Discovery responses      # 
+# unicast Discovery responses      #
 ####################################
 
     # Can't use a comprehension because we need the actual
     # list index in order select the correct socket.
-    _msg_bytes = _encrypt_msg(cbor.dumps([M_NOOP])) #No-op message
+    _msg_bytes = _encrypt_msg(cbor.dumps([M_NOOP])) # No-op message
     for _ in range(10):
         try:
             _mcssocks[i][1].sendto(_msg_bytes,0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
@@ -5647,11 +5647,11 @@ def _init_drsocks(i):
             _s =socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             _s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
-                #ttprint("Binding",_port)
+                # ttprint("Binding",_port)
                 _s.bind(('',_port))
-            except Exception:# Can't get the same port number, try again
-                #ttprint("Couldn't bind")
-                _s.close()              
+            except Exception: # Can't get the same port number, try again
+                # ttprint("Couldn't bind")
+                _s.close()
                 _mcssocks[i][1].close()
                 ifi = _mcssocks[i][0]
                 _mcssocks[i][1] = _try_mcsock(ifi)
@@ -5662,12 +5662,12 @@ def _init_drsocks(i):
             return
         except OSError as ex:
             ttprint(ex)
-            #Network down, most likely, wait and retry
+            # Network down, most likely, wait and retry
             tprint("Retrying to start discovery listener")
             time.sleep(10)
     # If we're here, something is deeply suspect and we have to give up.
     raise RuntimeError("Cannot get free port for discovery TCP listener")
-    
+
 
 class _drlisten(threading.Thread):
     """Internal use only"""
@@ -5686,20 +5686,20 @@ class _drlisten(threading.Thread):
         self.ifi = ifi
     def run(self):
         """Run the discovery-response listener for one interface."""
-        tprint("Discovery response listener for interface",self.ifi,"is up") 
+        tprint("Discovery response listener for interface",self.ifi,"is up")
         while True:
-            self.sock.listen(5)         
+            self.sock.listen(5)
             try:
                 ttprint("Listening for discovery response")
                 asock, aaddr = self.sock.accept()
                 rawmsg, send_addr = _recvraw(asock)
-                asock.close() 
+                asock.close()
                 if '%' in aaddr[0]:
-                    a,b = aaddr[0].split('%') #strip any Zone ID
+                    a,b = aaddr[0].split('%') # strip any Zone ID
                 else:
                     a = aaddr[0]
                 send_addr=ipaddress.IPv6Address(a)
-                #ttprint("Received TCP", _decrypt_msg(rawmsg), "from", send_addr)
+                # ttprint("Received TCP", _decrypt_msg(rawmsg), "from", send_addr)
                 try:
                     payload = cbor.loads(_decrypt_msg(rawmsg))
                     ttprint("Received response: CBOR->Python:", payload)
@@ -5709,7 +5709,7 @@ class _drlisten(threading.Thread):
                     elif msg.mtype != M_RESPONSE:
                         ttprint("Not a Response message: packet dropped")
                     else:
-                        #find the correct session queue
+                        # find the correct session queue
                         sid = msg.id_value  # session ID
                         sini = msg.id_source # session initiator
                         s=_get_session(_session_handle(sid,sini))
@@ -5717,7 +5717,7 @@ class _drlisten(threading.Thread):
                             # (give up silently if no such session)
                             if s.id_dq:
                                 # (give up silently if session has no queue)
-                                #queue for the discovery response handler
+                                # queue for the discovery response handler
                                 try:
                                     ttprint("Queueing response")
                                     s.id_dq.put([send_addr,self.ifi,msg],block=False)
@@ -5727,7 +5727,7 @@ class _drlisten(threading.Thread):
                     tprint("Discovery response: CBOR decode error")
             except OSError as ex:
                 tprint("Discovery response socket error", ex)
-                pass     #keep trying anyway
+                pass     # keep trying anyway
 
 
 
@@ -5748,7 +5748,7 @@ class _mchandler(threading.Thread):
         """Run the multicast queue handler until stopped."""
         tprint("Multicast queue handler up")
         while True:
-            try:      #this is to catch unknown bug 20190724
+            try:      # this is to catch unknown bug 20190724
                 mc = _mcq.get()
                 ttprint("Multicast handler got something", mc)
                 from_addr = mc[0]
@@ -5773,35 +5773,35 @@ class _mchandler(threading.Thread):
                 elif DULL and msg.mtype == M_FLOOD and \
                      msg.flood_list[0].obj.loop_count != 1:
                     ttprint("DULL dropping flood with bad loop count")
-                                        
+
                 elif msg.mtype == M_DISCOVERY:
                     ttprint("Got multicast Discovery msg")
-                
+
                     if _test_divert:
                         ttprint("mchandler: _test_divert",_test_divert)
 
-                    #Is the objective registered in this node?
+                    # Is the objective registered in this node?
                     try:
                         onum = msg.obj.num
                         _found = False
                         _rapid = False
-                        if not _test_divert:                        
+                        if not _test_divert:
                             _obj_lock.acquire()
                             for x in _obj_registry:
                                 if x.objective.num == onum and x.discoverable:
-                                    #Yes, we have it, can send unicast response
-                                    #(including the objective, for rapid mode)
+                                    # Yes, we have it, can send unicast response
+                                    # (including the objective, for rapid mode)
                                     _found = x.objective
                                     _rapid = x.rapid
                                     _ttl = x.ttl
                                     if x.locators:
-                                        #we have a specified list of asa_locator(s)
+                                        # we have a specified list of asa_locator(s)
                                         _alist = x.locators
                                     else:
-                                        #normal objective - create an asa_locator
+                                        # normal objective - create an asa_locator
                                         if x.local or (_my_address == None):
-                                            #either link-local address is required, or we
-                                            #have no global address, may as well send link-local
+                                            # either link-local address is required, or we
+                                            # have no global address, may as well send link-local
                                             for y in _ll_zone_ids:
                                                 if y[0] == from_ifi:
                                                     _a = y[1]
@@ -5835,12 +5835,12 @@ class _mchandler(threading.Thread):
                                         _alist = [_aloc]
                                     break
                             _obj_lock.release()
-                        
+
                         if _found:
-                            #found it locally, respond immediately
+                            # found it locally, respond immediately
                             _los = []
                             for _aloc in _alist:
-                                #build locator option
+                                # build locator option
                                 try:
                                     if getattr(_aloc, "is_uri", False):
                                         _los.append([O_URI_LOCATOR, _aloc.locator, _aloc.protocol, _aloc.port])
@@ -5856,18 +5856,18 @@ class _mchandler(threading.Thread):
                                     # If a malformed locator was supplied, skip it.
                                     pass
 
-                            #assemble response message with variable number of locators
-                            #plus the objective, for rapid mode
+                            # assemble response message with variable number of locators
+                            # plus the objective, for rapid mode
                             if _rapid:
                                 msg_bytes = _ass_message(M_RESPONSE, msg.id_value, msg.id_source,
                                                      _ttl, _los, _found)
                             else:
                                 msg_bytes = _ass_message(M_RESPONSE, msg.id_value, msg.id_source,
                                                      _ttl, _los)
-                                
+
                             # Send unicast UDP response to the requester's source port.
                             sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-                            sock.settimeout(1) #discovery requester should always be waiting
+                            sock.settimeout(1) # discovery requester should always be waiting
                             try:
                                 out_bytes = msg_bytes
                                 if coap_token is not None:
@@ -5877,44 +5877,44 @@ class _mchandler(threading.Thread):
                             except OSError as ex:
                                 tprint("Socket error when sending local discovery Response", ex)
                             sock.close()
-                            
+
                         elif not DULL:
-                                                
+
                             # Not local - do we have it in the cache?
                             # We will come here too if _test_divert is set
 
-                            #ttprint("Search discovery cache")
-                            
+                            # ttprint("Search discovery cache")
+
                             _disc_lock.acquire()
 
-                            #ttprint("Acquired _disc_lock")
-                            
+                            # ttprint("Acquired _disc_lock")
+
                             # Can't use a comprehension because we need the actual
                             # list entry in order to delete it.
                             ll = False
                             for i in range(len(_discovery_cache)):
-                                x = _discovery_cache[i]                        
-                                if x.objective.num == onum: #found the objective
+                                x = _discovery_cache[i]
+                                if x.objective.num == onum: # found the objective
                                     ll = x.asa_locators
-                                    if ll:  #it has not expired
+                                    if ll:  # it has not expired
                                         del(_discovery_cache[i])
-                                        _discovery_cache.append(x)   #make it Most Recently Used                                 
-                                    break   #quit the search
+                                        _discovery_cache.append(x)   # make it Most Recently Used
+                                    break   # quit the search
                             _disc_lock.release()
                             if ll:
-                                #Build Divert option
+                                # Build Divert option
                                 ttprint("Build Divert option")
                                 _ttl = 0
-                                #20220316 - fixed failure to use _option class here
+                                # 20220316 - fixed failure to use _option class here
                                 divo = _option(O_DIVERT)
                                 for y in ll:
-                                    #ttprint("Discovery cache entry", y.is_ipaddress, y.locator, y.ifi, y.expire, int(time.monotonic()))
+                                    # ttprint("Discovery cache entry", y.is_ipaddress, y.locator, y.ifi, y.expire, int(time.monotonic()))
                                     if y.is_ipaddress:
                                         if (not y.locator.is_link_local) and \
-                                           (y.expire > int(time.monotonic())): #not LL and not expired                                    
-                                                                       
-                                            #build locator option (only supports IPv6, TCP)
-                                            lo = [O_IPv6_LOCATOR, y.locator.packed, socket.IPPROTO_TCP, y.port]                                    
+                                           (y.expire > int(time.monotonic())): # not LL and not expired
+
+                                            # build locator option (only supports IPv6, TCP)
+                                            lo = [O_IPv6_LOCATOR, y.locator.packed, socket.IPPROTO_TCP, y.port]
                                             divo.embedded.append(lo)
                                             if _test_divert:
                                                 break # to avoid duplicates during local testing
@@ -5922,19 +5922,19 @@ class _mchandler(threading.Thread):
                                         divo.embedded.append([O_FQDN_LOCATOR, y.locator, y.protocol, y.port])
                                     elif y.is_uri:
                                         divo.embedded.append([O_URI_LOCATOR, y.locator])
-                                    #calculate worst case TTL
+                                    # calculate worst case TTL
                                     if y.expire > 0:
                                         if _ttl > 0:
                                             _ttl = min(int((y.expire - time.monotonic())*1000),_ttl)
                                         else:
                                             _ttl = int((y.expire - time.monotonic())*1000)
-                                    
+
                                 if _ttl == 0:
-                                    _ttl = _discCacheDefTimeOut  
+                                    _ttl = _discCacheDefTimeOut
                                 if len(divo.embedded):
                                     # Send unicast UDP divert response to the requester's source port.
                                     sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-                                    sock.settimeout(1) #discovery requester should always be waiting
+                                    sock.settimeout(1) # discovery requester should always be waiting
                                     try:
                                         msg_bytes = _ass_message(M_RESPONSE, msg.id_value, msg.id_source,
                                                                  _ttl, divo)
@@ -5947,26 +5947,26 @@ class _mchandler(threading.Thread):
                                         tprint("Socket error when sending divert Response", ex)
                                     sock.close()
                             else:
-                                #ttprint("Not in discovery cache")
+                                # ttprint("Not in discovery cache")
                                 pass
                         else:
                             tprint("DULL discovery failure")
                             pass
                     except OSError:
-                        #invalid discovery format - do nothing
+                        # invalid discovery format - do nothing
                         tprint("Discovery message has invalid content")
                 elif msg.mtype == M_FLOOD:
                     ttprint("Got Flood message, TTL=", msg.ttl)
 
-                    lobjs = msg.flood_list  #list of _flooded_objective
+                    lobjs = msg.flood_list  # list of _flooded_objective
 
                     for lo in lobjs:
-                        #construct asa_locator from locator option
+                        # construct asa_locator from locator option
                         if lo.loco:
                             _locs = _opt_to_asa_loc(lo.loco, from_ifi, False)
                             if len(_locs) == 1:
-                                _loc = _locs[0] #got exactly one locator
-                                
+                                _loc = _locs[0] # got exactly one locator
+
                             else:
                                 tprint("Anomalous locator in flood ignored")
                                 _loc = asa_locator(None, None, False)
@@ -5979,50 +5979,50 @@ class _mchandler(threading.Thread):
                         else:
                             _loc.expire = 0
 
-                        #construct and store objective
-                        obj = lo.obj                      
-                        #ttprint(obj.num,"flood has loop ct",obj.loop_count,"from ifi",from_ifi)
+                        # construct and store objective
+                        obj = lo.obj
+                        # ttprint(obj.num,"flood has loop ct",obj.loop_count,"from ifi",from_ifi)
                         obj = _detag_obj(obj)
-                        if obj.synch: #must be a synch objective
+                        if obj.synch: # must be a synch objective
                             _flood_lock.acquire()
-                            #zap objective if already cached
-                            #zap expired objectives as we go
+                            # zap objective if already cached
+                            # zap expired objectives as we go
                             for j in range(len(_flood_cache)):
                                 if _flood_cache[j].objective.num == obj.num and \
                                    _flood_cache[j].source.locator == _loc.locator and \
                                    _flood_cache[j].source.port == _loc.port:
-                                    #found it, zap old version
+                                    # found it, zap old version
                                     _flood_cache[j] = None
-                                    
+
                                 elif _flood_cache[j].source.expire !=0 and \
                                      _flood_cache[j].source.expire < int(time.monotonic()):
-                                    #expired entry, zap it
-                                    #ttprint("MC handler expiring flood",_flood_cache[j].objective.num,
+                                    # expired entry, zap it
+                                    # ttprint("MC handler expiring flood",_flood_cache[j].objective.num,
                                     #        _flood_cache[j].source.expire)
                                     _flood_cache[j] = None
-                                    
-                            #garbage collect
+
+                            # garbage collect
                             j=0
                             while j < len(_flood_cache):
                                 if _flood_cache[j] == None:
                                     del _flood_cache[j]
                                 else:
                                     j += 1
-                            
-                            #if cache is full, delete oldest
+
+                            # if cache is full, delete oldest
                             if len(_flood_cache) >= _floodCacheLimit:
                                 del(_flood_cache[0])
-                            #concatenate new one in MRU position
-                            _flood_cache.append(tagged_objective(obj,_loc))    
+                            # concatenate new one in MRU position
+                            _flood_cache.append(tagged_objective(obj,_loc))
                             _flood_lock.release()
-                            #ttprint(obj.num,"flood appended")                            
+                            # ttprint(obj.num,"flood appended")
                 else:
                     # Some other message such as M_NOOP, drop it
                     pass
             except Exception as ex:
                 tprint("Unexpected exception in _mchandler:", ex)
                 traceback.print_exc()
-                #and we just wait for the next multicast message
+                # and we just wait for the next multicast message
 
 
 
@@ -6037,15 +6037,15 @@ class _tcp_listen(threading.Thread):
 
     def run(self):
 
-        
+
         """Run the TCP request listener until stopped."""
         self.listen_sock.listen(5)
-        self.listen_sock.settimeout(None) #listeners will block
+        self.listen_sock.settimeout(None) # listeners will block
 
         # For ever, wait for incoming connections and queue them
         # for the listening ASA (if any).
         ttprint("A TCP request listener is up on port", self.listen_sock.getsockname()[1])
-        found = True #this will change if objective becomes unregistered
+        found = True # this will change if objective becomes unregistered
         while found:
             try:
                 asock, aaddr = self.listen_sock.accept()
@@ -6053,11 +6053,11 @@ class _tcp_listen(threading.Thread):
                 ttprint("Talking on",asock.getsockname())
                 rawmsg, send_addr = _recvraw(asock)
                 if '%' in aaddr[0]:
-                    a,b = aaddr[0].split('%') #strip any Zone ID
+                    a,b = aaddr[0].split('%') # strip any Zone ID
                 else:
                     a = aaddr[0]
                 send_addr=ipaddress.IPv6Address(a)
-                #ttprint("Received TCP", rawmsg, "from", send_addr,"bytecount",len(rawmsg))
+                # ttprint("Received TCP", rawmsg, "from", send_addr,"bytecount",len(rawmsg))
                 try:
                     payload = cbor.loads(_decrypt_msg(rawmsg))
                     ttprint("Received request: CBOR->Python:", payload)
@@ -6072,27 +6072,27 @@ class _tcp_listen(threading.Thread):
                         ttprint("Not a Request message: packet dropped")
                         asock.close()
                     else:
-                        #check whether ASA is listening
+                        # check whether ASA is listening
                         queued = False
                         found = False
                         _obj_lock.acquire()
-                        for x in _obj_registry: #??? once seemed to fail in reentrant case?
+                        for x in _obj_registry: # ??? once seemed to fail in reentrant case?
                             if x.objective.num == msg.obj.num:
                                 found = True
                                 ttprint("Listener found ",msg.obj.num," listening=",x.listening)
                                 if x.listening:
-                                    #check that flags match
+                                    # check that flags match
                                     if not _objective_supports(x.objective, msg.obj):
-                                        #oops, mismatch
+                                        # oops, mismatch
                                         ttprint("Request mismatches capability")
-                                        break                                
-                                    #queue socket,sender,and message for the ASA
+                                        break
+                                    # queue socket,sender,and message for the ASA
                                     try:
                                         x.listen_q.put([asock,send_addr,msg],block=False)
                                         queued = True
                                         ttprint("Request queued for ASA")
                                     except Exception:
-                                        tprint("ASA queue error: packet dropped")                            
+                                        tprint("ASA queue error: packet dropped")
                         _obj_lock.release()
                         if not queued:
                             # no listener for this objective
@@ -6102,8 +6102,8 @@ class _tcp_listen(threading.Thread):
                     asock.close()
             except OSError as ex:
                 tprint("Request listener socket error", ex)
-                pass     #go round again
-        #if we get here, the objective has vanished
+                pass     # go round again
+        # if we get here, the objective has vanished
         ttprint("Listener exiting on port", self.listen_sock.getsockname()[1])
         self.listen_sock.close()
 # end of TCP listener
@@ -6141,7 +6141,7 @@ def _queue_unicast_request(asock, send_addr, msg):
                 found = True
                 ttprint("Listener found ", msg.obj.num, " listening=", x.listening)
                 if x.listening:
-                    #check that flags match
+                    # check that flags match
                     if not _objective_supports(x.objective, msg.obj):
                         ttprint("Request mismatches capability")
                         break
@@ -6182,30 +6182,30 @@ class _watcher(threading.Thread):
         i=0
         while True:
             _security_check()
-            
+
             time.sleep(10)
-                       
+
             if test_mode and i<40:
                 i += 1
                 tprint("Watching the ACP in test mode; thread count:",threading.active_count())
-##                for x in _obj_registry:
-##                    if x.objective.value != 0:
-##                        tprint(x.objective.num, "synch value", x.objective.value)
-##                for x in _flood_cache:
-##                    tprint(x.name, "flood value", x.value)
+# #                for x in _obj_registry:
+# #                    if x.objective.value != 0:
+# #                        tprint(x.objective.num, "synch value", x.objective.value)
+# #                for x in _flood_cache:
+# #                    tprint(x.name, "flood value", x.value)
                 if i == 40:
                     tprint("Watcher going silent")
-                    
+
             # Watch for address change
-            
+
             _new_locator = acp._get_my_address()
             if _new_locator == ipaddress.IPv6Address("::1"):
                 # loopback address, looks like the CPU slept
                 tprint("CPU wakeup, no address yet")
                 # flag MC handler to restart on timeout
                 _mc_restart = True
-                # need to restart TCP listeners too                
-                
+                # need to restart TCP listeners too
+
             elif _new_locator and (_new_locator != _my_address):
                 tprint("IPv6 address changed to",_new_locator)
                 _my_address = _new_locator
@@ -6243,7 +6243,7 @@ class _figger(threading.Thread):
         """Run the ASA configuration loop until stopped."""
         global _multicast_size, _unicast_size
 
-        time.sleep(4)  #ensure that GRASP initialisation is done
+        time.sleep(4)  # ensure that GRASP initialisation is done
 
         ###################################
         # Constants for reading dictionary
@@ -6257,7 +6257,7 @@ class _figger(threading.Thread):
                 self.grasp_version = 2
                 self.max_multicast = 3
                 self.max_unicast = 4
-                
+
         cp = codepoints()
 
         tprint("ASA Configger is starting up.")
@@ -6270,7 +6270,7 @@ class _figger(threading.Thread):
         err,asa_handle = register_asa("Configger")
         if err:
             raise Exception("Could not register ASA Configger, "+etext[err])
-            
+
 
         ####################################
         # Define objective
@@ -6290,23 +6290,23 @@ class _figger(threading.Thread):
             if err:
                 tprint("Configger get-flood error:", etext[err])
             elif objs:
-                reply = objs[0].objective #take the first one (really should analyze multiple replies)
-##                if cp.sender in reply.value:
-##                    ttprint("Received",reply.name, "from", ipaddress.IPv6Address(reply.value[cp.sender]))
-##                if cp.sender_loop_count in reply.value:
-##                    ttprint(reply.name,"hops", reply.value[cp.sender_loop_count]-reply.loop_count+1)
-##                if cp.grasp_version in reply.value:
-##                    ttprint("GRASP version", reply.value[cp.grasp_version])
-##                if cp.max_hops in reply.value:
-##                    ttprint("Maximum hops", reply.value[cp.max_hops])
+                reply = objs[0].objective # take the first one (really should analyze multiple replies)
+# #                if cp.sender in reply.value:
+# #                    ttprint("Received",reply.name, "from", ipaddress.IPv6Address(reply.value[cp.sender]))
+# #                if cp.sender_loop_count in reply.value:
+# #                    ttprint(reply.name,"hops", reply.value[cp.sender_loop_count]-reply.loop_count+1)
+# #                if cp.grasp_version in reply.value:
+# #                    ttprint("GRASP version", reply.value[cp.grasp_version])
+# #                if cp.max_hops in reply.value:
+# #                    ttprint("Maximum hops", reply.value[cp.max_hops])
                 if cp.max_multicast in reply.value:
-                    #configure multicast size
+                    # configure multicast size
                     _msize = reply.value[cp.max_multicast]
                     if _msize != _multicast_size and _msize > GRASP_DEF_MAX_SIZE and _msize < 10*GRASP_DEF_MAX_SIZE:
                         tprint("Changing max multicast size to", _msize)
                         _multicast_size = _msize
                 if cp.max_unicast in reply.value:
-                    #configure unicast size
+                    # configure unicast size
                     _usize = reply.value[cp.max_unicast]
                     if _usize != _unicast_size and _usize > GRASP_DEF_MAX_SIZE and _usize < 10*GRASP_DEF_MAX_SIZE:
                         tprint("Changing max unicast size to", _usize)
@@ -6317,7 +6317,7 @@ class _figger(threading.Thread):
 def dump_all(partial=False):
     """
 Utility function dump_all() prints various GRASP data
-structures for interactive debugging. Not thread-safe.                             
+structures for interactive debugging. Not thread-safe.
 """
     if not partial:
         print("\nThread count:",threading.active_count(),"\n------------")
@@ -6326,10 +6326,10 @@ structures for interactive debugging. Not thread-safe.
         print("\nLink local zone index(es):\n-------------------------")
         for x in _ll_zone_ids:
             print(x)
-        print("\nASA registry contents:\n---------------------")       
+        print("\nASA registry contents:\n---------------------")
         for x in _asa_registry:
             print(x.name,"handle:",x.handle)
-    print("\nObjective registry contents:\n---------------------------")         
+    print("\nObjective registry contents:\n---------------------------")
     for x in _obj_registry:
         o= x.objective
         print(o.num,"ASA:",x.asa_id,"Listen:",x.listening,"Port", x.port,"Neg:",o.neg,
@@ -6344,12 +6344,12 @@ structures for interactive debugging. Not thread-safe.
                 print(y.locator, y.protocol, y.port, "Diverted:",y.diverted,"Expiry:",y.expire)
             if x.received:
                 print("Received",getattr(x.received, "name", ""),"rapid value",x.received.value)
-    print("\nFlood cache contents:\n--------------------")            
+    print("\nFlood cache contents:\n--------------------")
     for x in _flood_cache:
         print(x.objective.num,"count:",x.objective.loop_count,"value:", x.objective.value,
               "source:",x.source.locator, x.source.protocol, x.source.port, x.source.expire)
     if not partial:
-        print("\nSession ID cache contents:\n-------------------------")         
+        print("\nSession ID cache contents:\n-------------------------")
         for x in _session_id_cache:
             print("Handle:",'{:8}'.format(x.id_value),"Source:",x.id_source,"Active:",x.id_active,
                   "Relayed:",x.id_relayed)
@@ -6357,7 +6357,7 @@ structures for interactive debugging. Not thread-safe.
 def _security_check():
     """Internal use only """
     global _secure, _tls_required
-    
+
     ####################################
     # Is there a secure ACP or QUADS?                 #
     ####################################
@@ -6365,28 +6365,28 @@ def _security_check():
     astat = acp.status()
     ttprint("ACP status:", astat)
     if DULL:
-        _secure = False  #Make sure of it!
+        _secure = False  # Make sure of it!
         ttprint("WARNING: Insecure Discovery Unsolicited Link-Local (DULL) mode")
     else:
         _secure = astat or _crypto
         _tls_required = not _secure
         if _tls_required:
-            #should be code to cause TLS wrapping of TCP...
+            # should be code to cause TLS wrapping of TCP...
             tprint("WARNING: ACP insecure, need TLS, not implemented")
     return
 
 def _initialise_grasp():
     """Internal use only """
-    #Called the first time register_asa() is called
+    # Called the first time register_asa() is called
 
     ####################################
     # Should we even be here?          #
     ####################################
-    
+
     global _grasp_initialised
     if _grasp_initialised:
         return
-    
+
     ####################################
     # Declare all global variables     #
     # (a necessary nuisance)           #
@@ -6424,16 +6424,16 @@ def _initialise_grasp():
     tprint("WARNING: This is prototype code for the GRASP protocol.")
     tprint("It is unsuitable for operational purposes and relies")
     tprint("on an underlying ACP for security. Use it at your own risk!")
-    #print("For further details see http://xkcd.com/1742/")
+    # print("For further details see http://xkcd.com/1742/")
     tprint("Python GRASP Version",_version,"released under the")
     tprint("Revised BSD license.")
     tprint("Will use port", CGRASP_LISTEN_PORT)
     tprint("Will use multicast address", ALL_GRASP_NEIGHBORS_6)
 
     if (not _skip_dialogue) or (test_mode == "ask"):
-    
+
         ####################################
-        # Run in test mode?                # 
+        # Run in test mode?                #
         ####################################
 
         test_mode = False          # Set this True for prolix diagnostic prints
@@ -6453,7 +6453,7 @@ def _initialise_grasp():
     if (not _skip_dialogue) or (_mess_check == "ask"):
 
         ####################################
-        # Strict checking ?                # 
+        # Strict checking ?                #
         ####################################
 
         _mess_check = True         # Set this True for detailed format
@@ -6472,7 +6472,7 @@ def _initialise_grasp():
     if (not _skip_dialogue) or (_listen_self == "ask"):
 
         ####################################
-        # Listen to own LL multicasts?     # 
+        # Listen to own LL multicasts?     #
         ####################################
 
         _listen_self = True
@@ -6491,7 +6491,7 @@ def _initialise_grasp():
     if (not _skip_dialogue) or (_be_dull == "ask"):
 
         ####################################
-        # DULL mode?                       # 
+        # DULL mode?                       #
         ####################################
 
         DULL = False
@@ -6531,7 +6531,7 @@ def _initialise_grasp():
             tprint("QUADS disabled (no CGRASP_QUADS_KEY_FILE); traffic is plaintext")
     else:
         tprint("Insecure Discovery Unsolicited Link-Local (DULL) mode")
-        
+
     ####################################
     # Initialise global variables      #
     #                                  #
@@ -6547,7 +6547,7 @@ def _initialise_grasp():
     _rapid_supported = False    # Default, can only be changed by Intent
     _i_sent_it = 0              # Initialise hack to detect own discoveries
     _multi_asas = False         # Initialise multiple ASA status
-    
+
     _mcq = queue.Queue(_multQlimit) # Limits number of queued multicasts
 
     # Registries, caches and locks are owned by the default engine.  Rebind
@@ -6577,7 +6577,7 @@ def _initialise_grasp():
         tprint("Security status: ACP secure")
     else:
         tprint("Security status: GRASP is insecure")
-                           
+
     tprint("Initialised global variables, registries and caches.")
 
     ####################################
@@ -6590,16 +6590,16 @@ def _initialise_grasp():
 
     if _my_address == None:
         tprint("Could not find a valid global IPv6 address, will generate a bogon for session disambiguation")
-        #Note - this trick is not sanctioned in the spec, which says that
-        #in such a case, a RFC7217-based link-local address must be used.
-        _p = bytes.fromhex('20010db8f000baaaf000baaa')       #96 bits of prefix
-        _x = struct.pack('!L', _prng.randint(0, 2147483647)) #32 bits of randomness
+        # Note - this trick is not sanctioned in the spec, which says that
+        # in such a case, a RFC7217-based link-local address must be used.
+        _p = bytes.fromhex('20010db8f000baaaf000baaa')       # 96 bits of prefix
+        _x = struct.pack('!L', _prng.randint(0, 2147483647)) # 32 bits of randomness
         _session_locator = ipaddress.IPv6Address(_p+_x)
     else:
         if not acp.is_ula(_my_address):
             tprint("WARNING: address is not ULA")
         _session_locator = _my_address
-        
+
     tprint("My global scope address:", str(_my_address))
     tprint("Session locator:", str(_session_locator))
     tprint("Link local zone index(es):")
@@ -6610,15 +6610,15 @@ def _initialise_grasp():
 
     ####################################
     # Create sockets to send           #
-    # LL multicasts                    # 
+    # LL multicasts                    #
     ####################################
 
-    for _x in _ll_zone_ids:    
+    for _x in _ll_zone_ids:
         _make_mcssock(_x[0])
 
-    #Those sockets are now waiting in _mcssocks[].
-    #To send a packet:
-    #_mcssocks[?][1].sendto(bytes.fromhex('f000baaa'),0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
+    # Those sockets are now waiting in _mcssocks[].
+    # To send a packet:
+    # _mcssocks[?][1].sendto(bytes.fromhex('f000baaa'),0,(str(ALL_GRASP_NEIGHBORS_6), CGRASP_LISTEN_PORT))
 
 
     # Discovery responses are received over UDP in cGRASP; no TCP listeners needed.
@@ -6687,7 +6687,7 @@ def _initialise_grasp():
     # Start configuration ASA          #
     ####################################
 
-    _figger().start()    
+    _figger().start()
 
     # Auto-start aiocoap server endpoint for unicast-over-CoAP and/or standard multicast.
     if (_coap_server_autostart and _coap_transport_enabled) or _use_coap_std_multicast:
@@ -6697,7 +6697,7 @@ def _initialise_grasp():
     # GRASP initialisation complete!   #
     ####################################
 
-    time.sleep(2) # to avoid printing glitch    
+    time.sleep(2) # to avoid printing glitch
     tprint("GRASP startup function exiting")
 
 ####################################

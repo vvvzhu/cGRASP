@@ -2,42 +2,42 @@
 # Copyright (c) 2025-2026 The cGRASP contributors
 """########################################################
 ########################################################
-#                                                     
+#
 # Generic Autonomic Signaling Protocol (GRASP) API
 #
 # Module name is 'graspi'
-#                                                     
+#
 # This is a prototype/demo implementation of an application
 # programming interface for GRASP. It was developed using
 # Python 3.7.
 #
 # The API is based on RFC8991. The implementation relies
-# on the module grasp.py, which is based on RFC8990. 
-# This code is not guaranteed or validated in any way and is 
+# on the module grasp.py, which is based on RFC8990.
+# This code is not guaranteed or validated in any way and is
 # both incomplete and probably wrong. It makes no claim
 # to be production-quality code. Its main purpose is to
-# help improve the specifications.            
-#                                                     
-# Because it's demonstration code written in an       
-# interpreted language, performance is slow.          
-#                                                     
-# SECURITY WARNINGS:                                  
+# help improve the specifications.
+#
+# Because it's demonstration code written in an
+# interpreted language, performance is slow.
+#
+# SECURITY WARNINGS:
 #  - assumes ACP up on all interfaces (or none)
 #  - does not watch for interface up/down changes
-#  - no support for wrapping TCP in TLS      
+#  - no support for wrapping TCP in TLS
 #  - it is strongly recommended to use the built-in QUADS security
 #    unless a truly secure ACP is available
-#                                                     
-# LIMITATIONS:                                        
+#
+# LIMITATIONS:
 #  - only coded for IPv6, no IPv4 support
-#  - FQDN and URI locators incompletely supported          
-#  - no code for handling rapid mode negotiation                         
-#  - relay code is lazy (no rate control)                                      
+#  - FQDN and URI locators incompletely supported
+#  - no code for handling rapid mode negotiation
+#  - relay code is lazy (no rate control)
 #  - workarounds for defects in Python socket module and
 #    Windows socket peculiarities. Not tested on Android.
 #
-# See grasp.py for license, copyright, and disclaimer.                         
-#                                                     
+# See grasp.py for license, copyright, and disclaimer.
+#
 ########################################################
 ########################################################"""
 
@@ -46,9 +46,9 @@ import grasp
 def init(self):
     pass
 
-#First we import all the public classes, functions and
-#data from grasp.py, which need no tweaking to conform
-#to the API RFC-to-be.
+# First we import all the public classes, functions and
+# data from grasp.py, which need no tweaking to conform
+# to the API RFC-to-be.
 
 
 _most = ['objective', 'asa_locator', 'tagged_objective',
@@ -66,11 +66,11 @@ _most = ['objective', 'asa_locator', 'tagged_objective',
 for t in _most:
     exec("from grasp import "+t+" as "+t)
 
-#Next there are two functions where the returned values
-#are defined differently in the RFC-to-be than in the
-#original implementation. We therefore wrap calls to the
-#old version to preserve backwards compatibility.
-    
+# Next there are two functions where the returned values
+# are defined differently in the RFC-to-be than in the
+# original implementation. We therefore wrap calls to the
+# old version to preserve backwards compatibility.
+
 def request_negotiate(asa_handle, obj, peer, timeout):
     """
 ##############################################################
@@ -108,14 +108,14 @@ def request_negotiate(asa_handle, obj, peer, timeout):
 #
 # The ASA MUST store the session_handle (an opaque Python object)
 # and use it in the subsequent negotiation steps.
-# 
+#
 # 3) return errors.declined, None, None, string
 #
 # The peer declined further negotiation, the string gives a reason
 # if provided by the peer.
 #
 # 4) For any non-zero errorcode except errors.declined:
-#    return errorcode, None, None, None 
+#    return errorcode, None, None, None
 #
 # The negotiation failed, errorcode gives reason,
 # exponential backoff RECOMMENDED before retry.
@@ -152,10 +152,10 @@ def negotiate_step(asa_handle, shandle, obj, timeout):
         return e, None, None, r
     return e, None, None, None
 
-#Now define the exports from graspi as the direct imports
-#plus those two wrapped functions.
+# Now define the exports from graspi as the direct imports
+# plus those two wrapped functions.
 
 __all__ = _most + ['request_negotiate', 'negotiate_step']
 
-#Code that imports graspi can see through to other
-#internals of grasp via (e.g.) graspi.grasp.test_divert
+# Code that imports graspi can see through to other
+# internals of grasp via (e.g.) graspi.grasp.test_divert

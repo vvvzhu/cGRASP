@@ -249,7 +249,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         obj3.value = ["NZD", iwant]
         obj3.loop_count = prng.randint(4, 20)
-        #obj3.loop_count = 1
+        # obj3.loop_count = 1
         obj3.dry = bool(iwant & 4)
 
         if not iwant % 7:

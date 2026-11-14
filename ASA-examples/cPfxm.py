@@ -124,7 +124,7 @@ class negotiator(threading.Thread):
         try:
             req_ipv = int(nobj.value[ipv])
             req_plen = int(nobj.value[lgth])
-        except:
+        except Exception:
             endit(snonce, "Invalid request format")
             return
 
@@ -264,7 +264,7 @@ def create_pool():
         _ = input("Choose IPv6 prefix for pool? Y/N:")
         if _[0] == "Y" or _[0] == "y":
             ini_pref = None
-    except:
+    except Exception:
         pass
     if ini_pref == None:
         pl = 0
@@ -272,7 +272,7 @@ def create_pool():
             try:
                 _ = input("IPv6 prefix length for pool (3..127):")
                 pl = eval(_)
-            except:
+            except Exception:
                 pass
         pp = bytes.fromhex('20010db8000000000000000000000000')
         try:
@@ -283,9 +283,9 @@ def create_pool():
                     _ = input("Enter IPv6 prefix:>")
                     try:
                         pp = ipaddress.IPv6Address(_).packed
-                    except:
+                    except Exception:
                         print("Invalid")
-        except:
+        except Exception:
             pass
         ini_pref = [pl, pp]
     pool_lock.acquire()
@@ -435,7 +435,7 @@ try:
     _ = input("Act as origin? Y/N:")
     if _[0] == "Y" or _[0] == "y":
         origin = True
-except:
+except Exception:
     pass
 
 if origin:
@@ -444,7 +444,7 @@ if origin:
     try:
         _ = input("Enter longest allowed IPv6 subnet request:")
         subnet_length = int(eval(_))
-    except:
+    except Exception:
         pass
     if subnet_length > subnet_max:
         subnet_length = subnet_max
@@ -460,7 +460,7 @@ else:
     try:
         _ = input("Enter subnet length to be delegated:")
         subnet_length = int(eval(_))
-    except:
+    except Exception:
         pass
     if subnet_length > subnet_max:
         subnet_length = subnet_max
