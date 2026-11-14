@@ -33,7 +33,7 @@ dependencies = [
 [project.optional-dependencies]
 quads = ["cryptography>=42,<47"]
 test = [
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-timeout>=2,<3",
   "pytest-cov>=5,<7",
 ]
