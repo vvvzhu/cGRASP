@@ -8,6 +8,8 @@
 
 ## cGRASP fork
 
+- **L. Zhu** — cGRASP-over-CoAP prototype, relay, transport, tests and
+  documentation; repository maintainer.
 - **The cGRASP contributors** — cGRASP-over-CoAP prototype, relay,
   multicast/unicast transport, tests and documentation.
 
