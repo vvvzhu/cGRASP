@@ -3,6 +3,6 @@ cryptography>=42,<47
 dpkt>=1.9,<2
 pytest>=7,<9
 pytest-timeout>=2,<3
-pytest-cov>=5,<7
+pytest-cov>=5,<8
 pyflakes>=3,<5
 ruff>=0.6
