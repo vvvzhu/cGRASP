@@ -31,7 +31,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-quads = ["cryptography>=42,<47"]
+quads = ["cryptography>=42,<51"]
 test = [
   "pytest>=7,<9",
   "pytest-timeout>=2,<3",
@@ -39,7 +39,7 @@ test = [
 ]
 dev = [
   "cgrasp[test]",
-  "cryptography>=42,<47",
+  "cryptography>=42,<51",
   "dpkt>=1.9,<2",
   "pyflakes>=3,<5",
   "ruff>=0.6",

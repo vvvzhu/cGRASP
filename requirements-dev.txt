@@ -1,5 +1,5 @@
 -r requirements.txt
-cryptography>=42,<47
+cryptography>=42,<51
 dpkt>=1.9,<2
 pytest>=7,<9
 pytest-timeout>=2,<3
