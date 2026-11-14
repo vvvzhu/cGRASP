@@ -81,7 +81,7 @@
 #                                                     
 ########################################################
 ########################################################"""
-#【重定义了objective，待将socket替换为coap】
+
 
 _version = "xxx"
 
@@ -462,7 +462,6 @@ class _discovered_objective:
 
 class asa_locator:
     """
-    【】
 Locator for a discovered peer ASA, also used for flooded objectives.
 Values:
  .locator  The actual locator
@@ -484,7 +483,7 @@ Booleans:
 
         #Defaults
         self.protocol = socket.IPPROTO_TCP
-        self.port = CGRASP_LISTEN_PORT#【
+        self.port = CGRASP_LISTEN_PORT
         self.expire = 0
         
         #One of the following must be set when the object is created
@@ -885,7 +884,7 @@ GRASP_LISTEN_PORT = 7017 # IANA port number
 GRASP_DEF_TIMEOUT = 60000 # milliseconds
 GRASP_DEF_LOOPCT = 6
 GRASP_DEF_MAX_SIZE = 2048 # max message size
-CGRASP_LISTEN_PORT = 7018 # Assigned port number for cGRASP 【】
+CGRASP_LISTEN_PORT = 7018 # Assigned port number for cGRASP
 
 _multicast_size = GRASP_DEF_MAX_SIZE
 _unicast_size = GRASP_DEF_MAX_SIZE
@@ -2736,7 +2735,7 @@ def register_obj(asa_handle, obj, ttl=None, discoverable=False, \
             listen_sock=socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             listen_sock.bind(('',0))
-            listen_port = listen_sock.getsockname()[1] #【】
+            listen_port = listen_sock.getsockname()[1] 
             _tcp_listen(listen_sock).start()
     else:
         listen_port = 0
@@ -2802,7 +2801,7 @@ def deregister_obj(asa_handle, obj):
 # Support function:                #
 # Receive complete raw message     #
 # from TCP socket.                 #
-#  【】                                #
+#                                  #
 ####################################
 
 def _recvraw(sock):
