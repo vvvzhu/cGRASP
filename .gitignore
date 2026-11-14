@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local runtime, captures and generated evidence
+/c/
+/captures/
+/artifacts/
+*.pcap
+*.pcapng
+*.jsonl
+
+# QUADS key material generated or dropped locally
+quadsk.py
+
+# Local tooling
+.coverage
+.coverage.*
+htmlcov/
+
+# OS / editor
+.DS_Store
+Thumbs.db

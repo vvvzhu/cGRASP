@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS is supported by the code, but this private repository cannot
+        # acquire GitHub-hosted macOS runners (hosted-runner entitlement).
+        # Re-add macos-14 here when macOS minutes/entitlement are available.
+        os: [ubuntu-22.04, ubuntu-24.04, windows-2022]
+        python: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+      - name: Unit and loopback tests
+        run: python -m pytest -q -m "not relay" --cov --cov-report=term --cov-fail-under=35
+
+  lint:
+    name: pyflakes
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: python -m pip install pyflakes
+      - name: Static checks
+        run: |
+          python -m pyflakes \
+            src/cgrasp/cgrasp.py src/cgrasp/cgrasp_multicast.py \
+            src/cgrasp/cgrasp_coap_transport.py src/cgrasp/cgrasp_engine.py \
+            src/cgrasp/cgrasp_quiescence.py src/cgrasp/coap_client.py \
+            src/cgrasp/coap_server.py src/cgrasp/coap_multicast_adapter.py \
+            cgraspi.py conftest.py tests/*.py scripts/*.py
+
+  package:
+    name: package
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install build tools
+        run: python -m pip install --upgrade pip setuptools wheel
+      - name: Build and inspect wheel
+        run: python scripts/verify_package.py
+
+  relay:
+    name: relay e2e (linux netns)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y iproute2 tcpdump tshark
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]" dpkt
+      - name: Real relay E2E (veth + pcap validation)
+        run: sudo -E env "PATH=$PATH" python -m pytest -q -m relay

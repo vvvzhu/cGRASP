@@ -1,0 +1,11 @@
+{
+  "address": "fd00:2::1/64",
+  "interface": "veth-b",
+  "negotiated_value": 50,
+  "role": [
+    "discovery-responder",
+    "negotiation-responder",
+    "synchronization-responder",
+    "flood-listener"
+  ]
+}

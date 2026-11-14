@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an improvement or a new cGRASP capability
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What limitation or use case motivates this request?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the change and any alternatives considered.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and compatibility
+      description: Does this affect the cGRASP wire format, relay behaviour, or the legacy GRASP API?
+    validations:
+      required: false

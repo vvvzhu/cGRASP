@@ -1,0 +1,10 @@
+{
+  "address": "fd00:1::1/64",
+  "interface": "veth-a",
+  "role": [
+    "discovery-initiator",
+    "negotiation-initiator",
+    "synchronization-initiator",
+    "flood-initiator"
+  ]
+}

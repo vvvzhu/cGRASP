@@ -1,0 +1,11 @@
+{
+  "address_left": "fd00:1::fe/64",
+  "address_right": "fd00:2::fe/64",
+  "cache_ttl_ms": 1200,
+  "interfaces": [
+    "veth-r-left",
+    "veth-r-right"
+  ],
+  "ipv6_forwarding": true,
+  "role": "cgrasp-relay"
+}

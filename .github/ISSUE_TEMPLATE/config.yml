@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/virazhu/cGRASP/security/advisories/new
+    about: Please report vulnerabilities privately, not as public issues.
+  - name: cGRASP documentation
+    url: https://github.com/virazhu/cGRASP/blob/main/documentation/CGRASP_PROJECT_GUIDE.md
+    about: Implementation and user guide.

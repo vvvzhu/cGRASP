@@ -1,0 +1,22 @@
+cGRASP
+======
+
+This repository contains a prototype implementation of cGRASP (constrained
+GRASP) over CoAP.
+
+It is derived from "graspy", the Python demonstration implementation of GRASP
+(RFC 8990) and its API (RFC 8991), maintained by Brian E Carpenter:
+
+    https://github.com/becarpenter/graspy
+
+The upstream code is distributed under the Revised BSD License; the full
+license text is in the LICENSE file of this repository. Upstream copyright
+notices are retained in the source files that originate from graspy.
+
+The cGRASP-over-CoAP work was developed against
+draft-ietf-anima-constrained-grasp. The Internet-Draft is a work product of
+the IETF ANIMA working group and is subject to the IETF Trust Legal
+Provisions; it is not part of this repository's source code.
+
+Unless stated otherwise, files added by the cGRASP project are also
+distributed under the BSD 3-Clause License (see LICENSE).

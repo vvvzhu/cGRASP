@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a reproducible bug in cGRASP
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        cGRASP is a research prototype.  For security issues, do **not** open a
+        public issue; follow SECURITY.md instead.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Exact commands, configuration and logs.
+      placeholder: |
+        git commit:
+        python version:
+        OS:
+        command:
+        output:
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Packet captures, interface names, or relevant test output.
+    validations:
+      required: false

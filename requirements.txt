@@ -1,0 +1,3 @@
+aiocoap==0.4.17
+cbor2>=5.4,<6
+netifaces>=0.11,<1; platform_system != "Windows"
